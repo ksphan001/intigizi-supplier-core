@@ -13,17 +13,20 @@ import AdminSummaryView from './pages/AdminSummaryView';
 import SupplierVerificationView from './pages/SupplierVerificationView';
 import AllProductsView from './pages/AllProductsView';
 import ConnectedKitchensView from './pages/ConnectedKitchensView';
+import SupplierDashboardView from './pages/SupplierDashboardView';
 
 function Dashboard() {
   const user = JSON.parse(localStorage.getItem('supplierUser') || '{}');
   const isAdmin = parseInt(user.role_id) === 8;
 
-  const [activeTab, setActiveTab] = useState(isAdmin ? 'admin-dashboard' : 'katalog');
+  const [activeTab, setActiveTab] = useState(isAdmin ? 'admin-dashboard' : 'supplier-dashboard');
 
   const getHeaderTitle = () => {
     switch (activeTab) {
       case 'admin-dashboard':
         return 'Dashboard Konsolidasi Super Admin';
+      case 'supplier-dashboard':
+        return 'Dasbor Finansial & Analitik Toko';
       case 'verification':
         return 'Audit & Verifikasi Supplier';
       case 'admin-products':
@@ -96,6 +99,16 @@ function Dashboard() {
           ) : (
             <>
               <button
+                onClick={() => setActiveTab('supplier-dashboard')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'supplier-dashboard'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Dasbor Toko
+              </button>
+              <button
                 onClick={() => setActiveTab('katalog')}
                 className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
                   activeTab === 'katalog'
@@ -147,6 +160,7 @@ function Dashboard() {
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           {activeTab === 'admin-dashboard' && <AdminSummaryView />}
+          {activeTab === 'supplier-dashboard' && <SupplierDashboardView />}
           {activeTab === 'verification' && <SupplierVerificationView />}
           {activeTab === 'admin-products' && <AllProductsView />}
           {activeTab === 'connections' && <ConnectedKitchensView />}

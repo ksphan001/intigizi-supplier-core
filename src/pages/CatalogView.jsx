@@ -14,7 +14,9 @@ function CatalogView() {
     ingredient_name: '',
     base_price: '',
     daily_capacity: '',
-    unit_symbol: 'kg'
+    unit_symbol: 'kg',
+    tier_qty: '',
+    tier_price: ''
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -41,7 +43,9 @@ function CatalogView() {
       ingredient_name: '',
       base_price: '',
       daily_capacity: '',
-      unit_symbol: 'kg'
+      unit_symbol: 'kg',
+      tier_qty: '',
+      tier_price: ''
     });
     setShowForm(true);
   };
@@ -52,7 +56,9 @@ function CatalogView() {
       ingredient_name: item.ingredient_name || '',
       base_price: item.base_price || '',
       daily_capacity: item.daily_capacity || '',
-      unit_symbol: item.unit_symbol || 'kg'
+      unit_symbol: item.unit_symbol || 'kg',
+      tier_qty: item.tier_qty || '',
+      tier_price: item.tier_price || ''
     });
     setShowForm(true);
   };
@@ -127,66 +133,93 @@ function CatalogView() {
           </button>
           <h4 className="font-bold text-gray-800 text-sm">{editingItem ? 'Edit Bahan Baku' : 'Tambah Bahan Baku Baru'}</h4>
           
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Nama Bahan</label>
-              <input
-                type="text"
-                name="ingredient_name"
-                value={formData.ingredient_name}
-                onChange={handleChange}
-                className="input-style w-full bg-white text-sm"
-                placeholder="Cth: Telur Ayam"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Harga Dasar (Rp)</label>
-              <input
-                type="number"
-                name="base_price"
-                value={formData.base_price}
-                onChange={handleChange}
-                className="input-style w-full bg-white text-sm"
-                placeholder="Cth: 24000"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Kapasitas Harian</label>
-              <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Nama Bahan</label>
                 <input
-                  type="number"
-                  name="daily_capacity"
-                  value={formData.daily_capacity}
+                  type="text"
+                  name="ingredient_name"
+                  value={formData.ingredient_name}
                   onChange={handleChange}
-                  className="input-style w-full bg-white text-sm pr-12"
-                  placeholder="Cth: 100"
+                  className="input-style w-full bg-white text-sm"
+                  placeholder="Cth: Telur Ayam"
                   required
                 />
-                <select
-                  name="unit_symbol"
-                  value={formData.unit_symbol}
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Harga Dasar (Rp)</label>
+                <input
+                  type="number"
+                  name="base_price"
+                  value={formData.base_price}
                   onChange={handleChange}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-500 bg-transparent border-0 focus:ring-0 focus:outline-none"
-                >
-                  <option value="kg">kg</option>
-                  <option value="butir">butir</option>
-                  <option value="pcs">pcs</option>
-                  <option value="liter">liter</option>
-                  <option value="ikat">ikat</option>
-                  <option value="buah">buah</option>
-                </select>
+                  className="input-style w-full bg-white text-sm"
+                  placeholder="Cth: 24000"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Kapasitas Harian</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="daily_capacity"
+                    value={formData.daily_capacity}
+                    onChange={handleChange}
+                    className="input-style w-full bg-white text-sm pr-12"
+                    placeholder="Cth: 100"
+                    required
+                  />
+                  <select
+                    name="unit_symbol"
+                    value={formData.unit_symbol}
+                    onChange={handleChange}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-500 bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="kg">kg</option>
+                    <option value="butir">butir</option>
+                    <option value="pcs">pcs</option>
+                    <option value="liter">liter</option>
+                    <option value="ikat">ikat</option>
+                    <option value="buah">buah</option>
+                  </select>
+                </div>
               </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
-              >
-                {submitting ? <Loader2 className="animate-spin" size={16} /> : <><Save size={16} /><span>Simpan</span></>}
-              </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end border-t pt-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Minimal Grosir (Opsional)</label>
+                <input
+                  type="number"
+                  name="tier_qty"
+                  value={formData.tier_qty}
+                  onChange={handleChange}
+                  className="input-style w-full bg-white text-sm"
+                  placeholder="Cth: 50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">Harga Grosir (Rp)</label>
+                <input
+                  type="number"
+                  name="tier_price"
+                  value={formData.tier_price}
+                  onChange={handleChange}
+                  className="input-style w-full bg-white text-sm"
+                  placeholder="Cth: 22000"
+                />
+              </div>
+              <div className="md:col-span-2 flex justify-end">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="py-2 px-6 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {submitting ? <Loader2 className="animate-spin" size={16} /> : <><Save size={14} /><span>Simpan Bahan</span></>}
+                </button>
+              </div>
             </div>
           </form>
         </div>
@@ -206,6 +239,7 @@ function CatalogView() {
               <tr>
                 <th className="px-6 py-4">Nama Bahan</th>
                 <th className="px-6 py-4">Harga Dasar</th>
+                <th className="px-6 py-4">Diskon Grosir (Tier)</th>
                 <th className="px-6 py-4">Kapasitas Pasokan Harian</th>
                 <th className="px-6 py-4 text-right">Aksi</th>
               </tr>
@@ -214,7 +248,14 @@ function CatalogView() {
               {catalog.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 font-bold text-gray-800">{item.ingredient_name}</td>
-                  <td className="px-6 py-4 font-semibold text-green-700">{formatCurrency(item.base_price)} / {item.unit_symbol}</td>
+                  <td className="px-6 py-4 font-semibold text-gray-750">{formatCurrency(item.base_price)} / {item.unit_symbol}</td>
+                  <td className="px-6 py-4 text-xs font-semibold text-emerald-700">
+                    {parseFloat(item.tier_qty) > 0 ? (
+                      <span>{formatCurrency(item.tier_price)} / {item.unit_symbol} <span className="text-[10px] text-gray-400 font-bold block">(Min. {parseFloat(item.tier_qty).toLocaleString('id-ID')} {item.unit_symbol})</span></span>
+                    ) : (
+                      <span className="text-gray-400 italic font-normal">-</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-gray-600 font-medium">
                     {parseFloat(item.daily_capacity).toLocaleString('id-ID')} {item.unit_symbol} / Hari
                   </td>
