@@ -28,7 +28,7 @@ function AllProductsView() {
   const handleToggleProduct = async (id, currentStatus) => {
     setActionId(id);
     setMessage('');
-    const newStatus = currentStatus === 1 ? 0 : 1;
+    const newStatus = parseInt(currentStatus) === 1 ? 0 : 1;
     try {
       await apiClient.put('/admin_products.php', { id, is_active: newStatus });
       setMessage('Status keaktifan produk berhasil diperbarui!');
@@ -103,7 +103,7 @@ function AllProductsView() {
                     {parseFloat(item.daily_capacity).toLocaleString('id-ID')} {item.unit_symbol} / hari
                   </td>
                   <td className="px-6 py-4">
-                    {item.is_active === 1 ? (
+                    {parseInt(item.is_active) === 1 ? (
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
                         <CheckCircle2 size={12} /> Aktif / Publik
                       </span>
@@ -118,14 +118,14 @@ function AllProductsView() {
                       onClick={() => handleToggleProduct(item.id, item.is_active)}
                       disabled={actionId === item.id}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        item.is_active === 1
+                        parseInt(item.is_active) === 1
                           ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
                           : 'bg-green-600 text-white hover:bg-green-700'
                       }`}
                     >
                       {actionId === item.id ? (
                         <Loader2 className="animate-spin" size={12} />
-                      ) : item.is_active === 1 ? (
+                      ) : parseInt(item.is_active) === 1 ? (
                         'Tangguhkan'
                       ) : (
                         'Aktifkan'
