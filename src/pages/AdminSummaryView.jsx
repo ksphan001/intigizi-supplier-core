@@ -164,6 +164,73 @@ function AdminSummaryView() {
         <h4 className="text-sm font-bold text-gray-800 mb-4">Peta Sebaran Supplier B2B</h4>
         <div ref={mapContainerRef} className="h-96 rounded-xl border border-gray-200 overflow-hidden relative z-0" />
       </div>
+
+      {/* Advanced Section: SLA Rankings & Logistics Delay Warning */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* SLA Rankings */}
+        <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm">
+          <h4 className="text-sm font-bold text-gray-850 mb-4">🏆 Peringkat Keandalan SLA Supplier</h4>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left text-gray-500">
+              <thead className="text-[10px] text-gray-400 font-bold uppercase tracking-wider bg-gray-50 border-b">
+                <tr>
+                  <th className="px-4 py-2.5">Supplier</th>
+                  <th className="px-4 py-2.5 text-center">Rating</th>
+                  <th className="px-4 py-2.5 text-center">SLA Score</th>
+                  <th className="px-4 py-2.5 text-center">Waktu Proses</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {stats?.sla_rankings?.map((r, idx) => (
+                  <tr key={idx} className="hover:bg-gray-50/50">
+                    <td className="px-4 py-2.5 font-bold text-gray-700">{r.supplier_name}</td>
+                    <td className="px-4 py-2.5 text-center font-semibold text-amber-500">⭐️ {parseFloat(r.average_rating || 0).toFixed(1)}</td>
+                    <td className="px-4 py-2.5 text-center font-bold text-emerald-600">{parseFloat(r.sla_score || 100).toFixed(1)}%</td>
+                    <td className="px-4 py-2.5 text-center text-gray-650 font-semibold">{parseFloat(r.avg_process_time_hours || 0).toFixed(1)} jam</td>
+                  </tr>
+                ))}
+                {(!stats?.sla_rankings || stats.sla_rankings.length === 0) && (
+                  <tr>
+                    <td colSpan="4" className="text-center py-6 text-gray-400 italic">Belum ada data SLA terkalkulasi.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Delay Warnings */}
+        <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm space-y-4">
+          <h4 className="text-sm font-bold text-gray-850">⚠️ Peringatan Keterlambatan Logistik</h4>
+          <p className="text-[11px] text-gray-400 font-semibold">Mendeteksi supplier dengan rata-rata waktu proses pesanan melampaui toleransi 24 jam.</p>
+          
+          <div className="space-y-3">
+            {stats?.sla_rankings?.filter(r => parseFloat(r.avg_process_time_hours) > 24).map((r, idx) => (
+              <div key={idx} className="p-4 bg-amber-50/60 border border-amber-250 rounded-xl flex flex-col justify-between gap-2">
+                <div>
+                  <h5 className="font-bold text-xs text-amber-800">{r.supplier_name}</h5>
+                  <p className="text-[10px] text-amber-700 mt-1 font-semibold">
+                    Waktu proses rata-rata mencapai <span className="font-extrabold text-red-600">{parseFloat(r.avg_process_time_hours).toFixed(1)} jam</span>. Ini berpotensi menghambat distribusi dapur gizi.
+                  </p>
+                </div>
+                <a 
+                  href={`https://wa.me/${r.phone_number || ''}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="self-end px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[10px] font-bold transition-colors"
+                >
+                  Hubungi Supplier
+                </a>
+              </div>
+            ))}
+            {(!stats?.sla_rankings || stats.sla_rankings.filter(r => parseFloat(r.avg_process_time_hours) > 24).length === 0) && (
+              <div className="p-8 text-center text-xs font-semibold text-emerald-600 bg-emerald-50/30 border border-emerald-100 rounded-xl">
+                ✅ Semua logistik supplier berjalan lancar & tepat waktu di bawah 24 jam!
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
