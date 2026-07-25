@@ -41,7 +41,7 @@ function Dashboard() {
       case 'supplier-dashboard':
         return 'Dasbor Finansial & Analitik Toko';
       case 'verification':
-        return 'Audit & Verifikasi Supplier';
+        return 'Manajemen Daftar Supplier';
       case 'admin-products':
         return 'Katalog Produk Global';
       case 'connections':
@@ -88,7 +88,7 @@ function Dashboard() {
                 }`}
               >
                 <ShieldCheck size={18} className="mr-3 flex-shrink-0" />
-                <span>Verifikasi Supplier</span>
+                <span>Daftar Supplier</span>
               </button>
               <button
                 onClick={() => setActiveTab('admin-products')}
