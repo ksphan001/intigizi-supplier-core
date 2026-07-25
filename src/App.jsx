@@ -15,11 +15,24 @@ import AllProductsView from './pages/AllProductsView';
 import ConnectedKitchensView from './pages/ConnectedKitchensView';
 import SupplierDashboardView from './pages/SupplierDashboardView';
 
+import {
+  LayoutDashboard,
+  ShieldCheck,
+  Layers,
+  Link2,
+  Store,
+  ClipboardList,
+  User,
+  LogOut,
+  ChevronDown
+} from 'lucide-react';
+
 function Dashboard() {
   const user = JSON.parse(localStorage.getItem('supplierUser') || '{}');
   const isAdmin = parseInt(user.role_id) === 8;
 
   const [activeTab, setActiveTab] = useState(isAdmin ? 'admin-dashboard' : 'supplier-dashboard');
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const getHeaderTitle = () => {
     switch (activeTab) {
@@ -57,86 +70,94 @@ function Dashboard() {
             <>
               <button
                 onClick={() => setActiveTab('admin-dashboard')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'admin-dashboard'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Dashboard Admin
+                <LayoutDashboard size={18} className="mr-3" />
+                <span>Dashboard Admin</span>
               </button>
               <button
                 onClick={() => setActiveTab('verification')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'verification'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Verifikasi Supplier
+                <ShieldCheck size={18} className="mr-3" />
+                <span>Verifikasi Supplier</span>
               </button>
               <button
                 onClick={() => setActiveTab('admin-products')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'admin-products'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Katalog Produk Global
+                <Layers size={18} className="mr-3" />
+                <span>Katalog Produk Global</span>
               </button>
               <button
                 onClick={() => setActiveTab('connections')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'connections'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Koneksi Dapur Terhubung
+                <Link2 size={18} className="mr-3" />
+                <span>Koneksi Dapur Terhubung</span>
               </button>
             </>
           ) : (
             <>
               <button
                 onClick={() => setActiveTab('supplier-dashboard')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'supplier-dashboard'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Dasbor Toko
+                <LayoutDashboard size={18} className="mr-3" />
+                <span>Dasbor Toko</span>
               </button>
               <button
                 onClick={() => setActiveTab('katalog')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'katalog'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Katalog Saya
+                <Store size={18} className="mr-3" />
+                <span>Katalog Saya</span>
               </button>
               <button
                 onClick={() => setActiveTab('orders')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'orders'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Pesanan Masuk
+                <ClipboardList size={18} className="mr-3" />
+                <span>Pesanan Masuk</span>
               </button>
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'profile'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                Profil Toko
+                <User size={18} className="mr-3" />
+                <span>Profil Toko</span>
               </button>
             </>
           )}
@@ -145,17 +166,53 @@ function Dashboard() {
 
       {/* Main Content Area */}
       <main className="flex-1 p-8 overflow-y-auto">
-        <header className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
+        <header className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200 relative">
           <h2 className="text-2xl font-bold text-gray-800">{getHeaderTitle()}</h2>
-          <button
-            onClick={() => {
-              localStorage.clear();
-              window.location.href = '/login';
-            }}
-            className="text-sm font-semibold text-red-655 hover:text-red-800 transition-colors"
-          >
-            Keluar
-          </button>
+          
+          <div className="relative">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200"
+            >
+              <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-black text-sm">
+                {user.supplier_name ? user.supplier_name.charAt(0).toUpperCase() : 'A'}
+              </div>
+              <ChevronDown size={14} className="text-gray-550" />
+            </button>
+
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-150 rounded-2xl shadow-xl py-2 z-50 animate-fade-in">
+                <div className="px-4 py-2 border-b">
+                  <p className="text-xs font-black text-gray-800 truncate">{user.supplier_name || 'Administrator'}</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">{user.username || 'admin'}</p>
+                </div>
+                
+                {!isAdmin && (
+                  <button
+                    onClick={() => {
+                      setActiveTab('profile');
+                      setShowProfileMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                  >
+                    <User size={14} className="text-gray-400" />
+                    <span>Profil Toko</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    window.location.href = '/login';
+                  }}
+                  className="w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 border-t cursor-pointer"
+                >
+                  <LogOut size={14} />
+                  <span>Keluar Portal</span>
+                </button>
+              </div>
+            )}
+          </div>
         </header>
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
