@@ -9,12 +9,21 @@ import Register from './pages/Register';
 import CatalogView from './pages/CatalogView';
 import OrdersView from './pages/OrdersView';
 import ProfileView from './pages/ProfileView';
+import AdminSummaryView from './pages/AdminSummaryView';
+import SupplierVerificationView from './pages/SupplierVerificationView';
 
 function Dashboard() {
-  const [activeTab, setActiveTab] = useState('katalog');
+  const user = JSON.parse(localStorage.getItem('supplierUser') || '{}');
+  const isAdmin = parseInt(user.role_id) === 8;
+
+  const [activeTab, setActiveTab] = useState(isAdmin ? 'admin-dashboard' : 'katalog');
 
   const getHeaderTitle = () => {
     switch (activeTab) {
+      case 'admin-dashboard':
+        return 'Dashboard Konsolidasi Super Admin';
+      case 'verification':
+        return 'Audit & Verifikasi Supplier';
       case 'katalog':
         return 'Manajemen Katalog Bahan Baku';
       case 'orders':
@@ -35,36 +44,63 @@ function Dashboard() {
           <span className="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded-full uppercase">B2B</span>
         </h1>
         <nav className="space-y-1">
-          <button
-            onClick={() => setActiveTab('katalog')}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              activeTab === 'katalog'
-                ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            Katalog Saya
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              activeTab === 'orders'
-                ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            Pesanan Masuk
-          </button>
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              activeTab === 'profile'
-                ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            Profil Toko
-          </button>
+          {isAdmin ? (
+            <>
+              <button
+                onClick={() => setActiveTab('admin-dashboard')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'admin-dashboard'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Dashboard Admin
+              </button>
+              <button
+                onClick={() => setActiveTab('verification')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'verification'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Verifikasi Supplier
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => setActiveTab('katalog')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'katalog'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Katalog Saya
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'orders'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Pesanan Masuk
+              </button>
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'profile'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Profil Toko
+              </button>
+            </>
+          )}
         </nav>
       </aside>
 
@@ -77,13 +113,15 @@ function Dashboard() {
               localStorage.clear();
               window.location.href = '/login';
             }}
-            className="text-sm font-semibold text-red-650 hover:text-red-800 transition-colors"
+            className="text-sm font-semibold text-red-655 hover:text-red-800 transition-colors"
           >
             Keluar
           </button>
         </header>
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          {activeTab === 'admin-dashboard' && <AdminSummaryView />}
+          {activeTab === 'verification' && <SupplierVerificationView />}
           {activeTab === 'katalog' && <CatalogView />}
           {activeTab === 'orders' && <OrdersView />}
           {activeTab === 'profile' && <ProfileView />}
