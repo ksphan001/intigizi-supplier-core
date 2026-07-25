@@ -35,6 +35,12 @@ function ProfileView() {
   const markerRef = useRef(null);
 
   const [isVerified, setIsVerified] = useState(false);
+  const [profileStats, setProfileStats] = useState({
+    average_rating: 0.00,
+    review_count: 0,
+    sla_score: 100.00,
+    avg_process_time_hours: 0.00
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -43,6 +49,12 @@ function ProfileView() {
         const response = await apiClient.get('/supplier_profile.php');
         const data = response.data;
         setIsVerified(!!data.is_verified);
+        setProfileStats({
+          average_rating: parseFloat(data.average_rating || 0),
+          review_count: parseInt(data.review_count || 0),
+          sla_score: parseFloat(data.sla_score || 100),
+          avg_process_time_hours: parseFloat(data.avg_process_time_hours || 0)
+        });
         setFormData({
           supplier_name: data.supplier_name || '',
           contact_person: data.contact_person || '',
@@ -154,17 +166,43 @@ function ProfileView() {
         </div>
       )}
 
-      <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl">
-        <div className="text-xs font-bold text-gray-500 uppercase">Status Verifikasi:</div>
-        {isVerified ? (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-200">
-            Terverifikasi (Verified Supplier)
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
-            Menunggu Verifikasi Administrasi
-          </span>
-        )}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 bg-gray-50 border border-gray-200 rounded-2xl">
+        <div className="flex items-center gap-2">
+          <div className="text-xs font-bold text-gray-500 uppercase">Status Verifikasi:</div>
+          {isVerified ? (
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-200">
+              Terverifikasi (Verified Supplier)
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+              Menunggu Verifikasi Administrasi
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* SLA & Rating Metrics Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm text-center">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Rating Toko</p>
+          <p className="text-xl font-extrabold text-gray-800 mt-1">⭐️ {profileStats.average_rating.toFixed(2)}</p>
+          <p className="text-[9px] text-gray-400 font-semibold mt-0.5">{profileStats.review_count} Ulasan Dapur</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm text-center">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">SLA Pemenuhan</p>
+          <p className="text-xl font-extrabold text-emerald-600 mt-1">{profileStats.sla_score.toFixed(1)}%</p>
+          <p className="text-[9px] text-gray-400 font-semibold mt-0.5">Keandalan Pengiriman</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm text-center">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Waktu Proses</p>
+          <p className="text-xl font-extrabold text-gray-800 mt-1">🕒 {profileStats.avg_process_time_hours.toFixed(1)} jam</p>
+          <p className="text-[9px] text-gray-400 font-semibold mt-0.5">Rata-rata Kemas</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm text-center">
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Cakupan Radius</p>
+          <p className="text-xl font-extrabold text-blue-600 mt-1">📍 {formData.coverage_radius_km} km</p>
+          <p className="text-[9px] text-gray-400 font-semibold mt-0.5">Area Pengantaran</p>
+        </div>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
