@@ -4,20 +4,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 // Import CSS
 import './index.css';
 
-// Placeholder Pages (will be fully implemented next)
-function Login() {
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md border border-gray-100 text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Portal B2B Supplier</h2>
-        <p className="text-gray-500 text-sm mb-6">Masuk untuk mengelola katalog & pesanan dapur IntiGizi</p>
-        <button onClick={() => window.location.href = '/dashboard'} className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors">
-          Demo Masuk Dashboard
-        </button>
-      </div>
-    </div>
-  );
-}
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function Dashboard() {
   return (
@@ -57,6 +45,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
