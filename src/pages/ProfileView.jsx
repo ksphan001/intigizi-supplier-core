@@ -34,12 +34,15 @@ function ProfileView() {
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
 
+  const [isVerified, setIsVerified] = useState(false);
+
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
         const response = await apiClient.get('/supplier_profile.php');
         const data = response.data;
+        setIsVerified(!!data.is_verified);
         setFormData({
           supplier_name: data.supplier_name || '',
           contact_person: data.contact_person || '',
@@ -150,6 +153,19 @@ function ProfileView() {
           {message}
         </div>
       )}
+
+      <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-2xl">
+        <div className="text-xs font-bold text-gray-500 uppercase">Status Verifikasi:</div>
+        {isVerified ? (
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 border border-green-200">
+            Terverifikasi (Verified Supplier)
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+            Menunggu Verifikasi Administrasi
+          </span>
+        )}
+      </div>
 
       <form onSubmit={handleSave} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
