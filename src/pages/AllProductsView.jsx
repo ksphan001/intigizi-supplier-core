@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../services/api';
 import { Loader2, Search, Trash2, CheckCircle2, AlertCircle } from 'lucide-react';
 
+import { useMemo } from 'react';
+
 function AllProductsView() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [selectedSupplier, setSelectedSupplier] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [actionId, setActionId] = useState(null);
   const [message, setMessage] = useState('');
 
@@ -25,6 +30,23 @@ function AllProductsView() {
     fetchProducts();
   }, []);
 
+  const getCategory = (name) => {
+    const lowercase = name.toLowerCase();
+    if (lowercase.includes('daging') || lowercase.includes('ayam') || lowercase.includes('bebek') || lowercase.includes('telur') || lowercase.includes('kambing') || lowercase.includes('ati') || lowercase.includes('puyuh') || lowercase.includes('ikan') || lowercase.includes('susu')) {
+      return 'Lauk Protein';
+    }
+    if (lowercase.includes('beras') || lowercase.includes('kentang') || lowercase.includes('oat') || lowercase.includes('tepung')) {
+      return 'Makanan Pokok';
+    }
+    if (lowercase.includes('wortel') || lowercase.includes('bayam') || lowercase.includes('bumbu') || lowercase.includes('tempe') || lowercase.includes('tahu') || lowercase.includes('sayur') || lowercase.includes('bawang') || lowercase.includes('cabe')) {
+      return 'Sayuran & Lauk Nabati';
+    }
+    if (lowercase.includes('pisang') || lowercase.includes('melon') || lowercase.includes('air') || lowercase.includes('jus') || lowercase.includes('buah')) {
+      return 'Buah & Minuman';
+    }
+    return 'Lain-lain';
+  };
+
   const handleToggleProduct = async (id, currentStatus) => {
     setActionId(id);
     setMessage('');
@@ -40,10 +62,20 @@ function AllProductsView() {
     }
   };
 
-  const filteredProducts = products.filter(p => 
-    p.ingredient_name.toLowerCase().includes(search.toLowerCase()) ||
-    p.supplier_name.toLowerCase().includes(search.toLowerCase())
-  );
+  const uniqueSuppliers = useMemo(() => {
+    return Array.from(new Set(products.map(p => p.supplier_name))).sort();
+  }, [products]);
+
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.ingredient_name.toLowerCase().includes(search.toLowerCase()) ||
+                          p.supplier_name.toLowerCase().includes(search.toLowerCase());
+    const matchesSupplier = !selectedSupplier || p.supplier_name === selectedSupplier;
+    const matchesStatus = !selectedStatus || 
+                          (selectedStatus === '1' && parseInt(p.is_active) === 1) || 
+                          (selectedStatus === '0' && parseInt(p.is_active) === 0);
+    const matchesCategory = !selectedCategory || getCategory(p.ingredient_name) === selectedCategory;
+    return matchesSearch && matchesSupplier && matchesStatus && matchesCategory;
+  });
 
   return (
     <div className="space-y-6">
@@ -53,22 +85,75 @@ function AllProductsView() {
         </div>
       )}
 
-      <div className="flex justify-between items-center gap-4 flex-wrap">
-        <div className="relative flex-1 max-w-md">
-          <input
-            type="text"
-            placeholder="Cari bahan makanan atau nama supplier..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="input-style w-full pl-10"
-          />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+      <div className="bg-gray-50 p-5 rounded-2xl border border-gray-150 flex flex-wrap gap-4 items-end shadow-sm">
+        <div className="flex-1 min-w-[220px]">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Cari Kata Kunci</label>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Cari bahan makanan..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-style w-full pl-9 h-[38px] mt-0 text-xs py-1"
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+          </div>
         </div>
+
+        <div className="w-48">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filter Kategori</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="input-style bg-white h-[38px] mt-0 text-xs py-1 px-2.5 font-semibold"
+          >
+            <option value="">-- Semua Kategori --</option>
+            <option value="Makanan Pokok">Makanan Pokok</option>
+            <option value="Lauk Protein">Lauk Protein</option>
+            <option value="Sayuran & Lauk Nabati">Sayuran & Lauk Nabati</option>
+            <option value="Buah & Minuman">Buah & Minuman</option>
+            <option value="Lain-lain">Lain-lain</option>
+          </select>
+        </div>
+
+        <div className="w-56">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Filter Pemasok</label>
+          <select
+            value={selectedSupplier}
+            onChange={(e) => setSelectedSupplier(e.target.value)}
+            className="input-style bg-white h-[38px] mt-0 text-xs py-1 px-2.5 font-semibold"
+          >
+            <option value="">-- Semua Supplier --</option>
+            {uniqueSuppliers.map(sup => (
+              <option key={sup} value={sup}>{sup}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="w-44">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status Layanan</label>
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="input-style bg-white h-[38px] mt-0 text-xs py-1 px-2.5 font-semibold"
+          >
+            <option value="">-- Semua Status --</option>
+            <option value="1">Aktif / Publik</option>
+            <option value="0">Ditangguhkan</option>
+          </select>
+        </div>
+
         <button
-          onClick={fetchProducts}
-          className="text-xs font-bold text-green-600 hover:text-green-800 transition-colors bg-green-50 px-3 py-2 rounded-xl border border-green-200"
+          onClick={() => {
+            setSearch('');
+            setSelectedSupplier('');
+            setSelectedStatus('');
+            setSelectedCategory('');
+            fetchProducts();
+          }}
+          className="h-[38px] px-4 bg-white hover:bg-gray-100 text-gray-700 font-bold border border-gray-250 rounded-xl text-xs transition-colors flex items-center gap-1.5 shadow-sm"
         >
-          Penyegaran Data
+          Reset Filter
         </button>
       </div>
 
@@ -84,6 +169,7 @@ function AllProductsView() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
               <tr>
                 <th className="px-6 py-4">Bahan Baku</th>
+                <th className="px-6 py-4">Kategori</th>
                 <th className="px-6 py-4">Supplier / Pemasok</th>
                 <th className="px-6 py-4">Harga Dasar</th>
                 <th className="px-6 py-4">Kapasitas Harian</th>
@@ -95,6 +181,17 @@ function AllProductsView() {
               {filteredProducts.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 font-bold text-gray-800">{item.ingredient_name}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${
+                      getCategory(item.ingredient_name) === 'Lauk Protein' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
+                      getCategory(item.ingredient_name) === 'Makanan Pokok' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                      getCategory(item.ingredient_name) === 'Sayuran & Lauk Nabati' ? 'bg-green-50 text-green-700 border border-green-100' :
+                      getCategory(item.ingredient_name) === 'Buah & Minuman' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
+                      'bg-gray-50 text-gray-700 border border-gray-100'
+                    }`}>
+                      {getCategory(item.ingredient_name)}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 text-gray-700 font-semibold">{item.supplier_name}</td>
                   <td className="px-6 py-4 text-gray-900 font-bold">
                     Rp {parseFloat(item.base_price).toLocaleString('id-ID')} / {item.unit_symbol}
