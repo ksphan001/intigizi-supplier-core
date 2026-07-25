@@ -11,6 +11,8 @@ import OrdersView from './pages/OrdersView';
 import ProfileView from './pages/ProfileView';
 import AdminSummaryView from './pages/AdminSummaryView';
 import SupplierVerificationView from './pages/SupplierVerificationView';
+import AllProductsView from './pages/AllProductsView';
+import ConnectedKitchensView from './pages/ConnectedKitchensView';
 
 function Dashboard() {
   const user = JSON.parse(localStorage.getItem('supplierUser') || '{}');
@@ -24,6 +26,10 @@ function Dashboard() {
         return 'Dashboard Konsolidasi Super Admin';
       case 'verification':
         return 'Audit & Verifikasi Supplier';
+      case 'admin-products':
+        return 'Katalog Produk Global';
+      case 'connections':
+        return 'Koneksi Dapur Terhubung';
       case 'katalog':
         return 'Manajemen Katalog Bahan Baku';
       case 'orders':
@@ -65,6 +71,26 @@ function Dashboard() {
                 }`}
               >
                 Verifikasi Supplier
+              </button>
+              <button
+                onClick={() => setActiveTab('admin-products')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'admin-products'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Katalog Produk Global
+              </button>
+              <button
+                onClick={() => setActiveTab('connections')}
+                className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                  activeTab === 'connections'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                Koneksi Dapur Terhubung
               </button>
             </>
           ) : (
@@ -122,6 +148,8 @@ function Dashboard() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           {activeTab === 'admin-dashboard' && <AdminSummaryView />}
           {activeTab === 'verification' && <SupplierVerificationView />}
+          {activeTab === 'admin-products' && <AllProductsView />}
+          {activeTab === 'connections' && <ConnectedKitchensView />}
           {activeTab === 'katalog' && <CatalogView />}
           {activeTab === 'orders' && <OrdersView />}
           {activeTab === 'profile' && <ProfileView />}
