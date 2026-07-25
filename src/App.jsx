@@ -70,46 +70,46 @@ function Dashboard() {
             <>
               <button
                 onClick={() => setActiveTab('admin-dashboard')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'admin-dashboard'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <LayoutDashboard size={18} className="mr-3" />
+                <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
                 <span>Dashboard Admin</span>
               </button>
               <button
                 onClick={() => setActiveTab('verification')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'verification'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <ShieldCheck size={18} className="mr-3" />
+                <ShieldCheck size={18} className="mr-3 flex-shrink-0" />
                 <span>Verifikasi Supplier</span>
               </button>
               <button
                 onClick={() => setActiveTab('admin-products')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'admin-products'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Layers size={18} className="mr-3" />
+                <Layers size={18} className="mr-3 flex-shrink-0" />
                 <span>Katalog Produk Global</span>
               </button>
               <button
                 onClick={() => setActiveTab('connections')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'connections'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Link2 size={18} className="mr-3" />
+                <Link2 size={18} className="mr-3 flex-shrink-0" />
                 <span>Koneksi Dapur Terhubung</span>
               </button>
             </>
@@ -117,46 +117,46 @@ function Dashboard() {
             <>
               <button
                 onClick={() => setActiveTab('supplier-dashboard')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'supplier-dashboard'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <LayoutDashboard size={18} className="mr-3" />
+                <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
                 <span>Dasbor Toko</span>
               </button>
               <button
                 onClick={() => setActiveTab('katalog')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'katalog'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <Store size={18} className="mr-3" />
+                <Store size={18} className="mr-3 flex-shrink-0" />
                 <span>Katalog Saya</span>
               </button>
               <button
                 onClick={() => setActiveTab('orders')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'orders'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <ClipboardList size={18} className="mr-3" />
+                <ClipboardList size={18} className="mr-3 flex-shrink-0" />
                 <span>Pesanan Masuk</span>
               </button>
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`w-full flex items-center px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'profile'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                <User size={18} className="mr-3" />
+                <User size={18} className="mr-3 flex-shrink-0" />
                 <span>Profil Toko</span>
               </button>
             </>
