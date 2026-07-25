@@ -21,6 +21,17 @@ function AllProductsView() {
     'Lain-lain': 2
   });
 
+  useEffect(() => {
+    const saved = localStorage.getItem('platformCommissions');
+    if (saved) {
+      try {
+        setCommissions(JSON.parse(saved));
+      } catch (err) {
+        console.error("Gagal membaca komisi", err);
+      }
+    }
+  }, []);
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -91,32 +102,6 @@ function AllProductsView() {
           {message}
         </div>
       )}
-
-      {/* Commission settings panel */}
-      <div className="bg-white border border-gray-150 p-6 rounded-2xl shadow-sm space-y-4">
-        <div>
-          <h4 className="font-extrabold text-gray-800 text-sm">⚙️ Pengaturan Komisi Transaksi Platform</h4>
-          <p className="text-[10px] text-gray-400 font-bold uppercase mt-0.5 tracking-wider">Potongan Komisi Superadmin B2B Marketplace</p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {Object.keys(commissions).map((cat) => (
-            <div key={cat} className="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1.5">
-              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">{cat}</label>
-              <div className="flex items-center gap-1">
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={commissions[cat]}
-                  onChange={(e) => setCommissions(prev => ({ ...prev, [cat]: parseInt(e.target.value) || 0 }))}
-                  className="w-full bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-855 p-1 text-center"
-                />
-                <span className="text-xs text-gray-400 font-bold">%</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
       <div className="bg-gray-50 p-5 rounded-2xl border border-gray-150 flex flex-wrap gap-4 items-end shadow-sm">
         <div className="flex-1 min-w-[220px]">

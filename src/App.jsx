@@ -14,6 +14,7 @@ import SupplierVerificationView from './pages/SupplierVerificationView';
 import AllProductsView from './pages/AllProductsView';
 import ConnectedKitchensView from './pages/ConnectedKitchensView';
 import SupplierDashboardView from './pages/SupplierDashboardView';
+import CommissionSettingsView from './pages/CommissionSettingsView';
 
 import {
   LayoutDashboard,
@@ -24,7 +25,8 @@ import {
   ClipboardList,
   User,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Percent
 } from 'lucide-react';
 
 function Dashboard() {
@@ -37,7 +39,7 @@ function Dashboard() {
   const getHeaderTitle = () => {
     switch (activeTab) {
       case 'admin-dashboard':
-        return 'Dashboard Konsolidasi Super Admin';
+        return 'Dashboard Consolidation Super Admin';
       case 'supplier-dashboard':
         return 'Dasbor Finansial & Analitik Toko';
       case 'verification':
@@ -46,6 +48,8 @@ function Dashboard() {
         return 'Katalog Produk Global';
       case 'connections':
         return 'Koneksi Dapur Terhubung';
+      case 'commission-settings':
+        return 'Pengaturan Komisi Platform';
       case 'katalog':
         return 'Manajemen Katalog Bahan Baku';
       case 'orders':
@@ -111,6 +115,17 @@ function Dashboard() {
               >
                 <Link2 size={18} className="mr-3 flex-shrink-0" />
                 <span>Koneksi Dapur Terhubung</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('commission-settings')}
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                  activeTab === 'commission-settings'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <Percent size={18} className="mr-3 flex-shrink-0" />
+                <span>Komisi Platform</span>
               </button>
             </>
           ) : (
@@ -221,6 +236,7 @@ function Dashboard() {
           {activeTab === 'verification' && <SupplierVerificationView />}
           {activeTab === 'admin-products' && <AllProductsView />}
           {activeTab === 'connections' && <ConnectedKitchensView />}
+          {activeTab === 'commission-settings' && <CommissionSettingsView />}
           {activeTab === 'katalog' && <CatalogView />}
           {activeTab === 'orders' && <OrdersView />}
           {activeTab === 'profile' && <ProfileView />}
