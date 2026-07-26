@@ -46,7 +46,7 @@ function Register() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-gray-50 flex items-center justify-center p-4 py-12">
       <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 w-full max-w-lg transition-all duration-300 hover:shadow-2xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold text-green-700 tracking-tight">Daftar Mitra B2B</h1>
+          <h1 className="text-3xl font-extrabold text-green-700 tracking-tight">Daftar Mitra Sentra IntiGizi</h1>
           <p className="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider">Gabung Ekosistem Supplier IntiGizi</p>
         </div>
 

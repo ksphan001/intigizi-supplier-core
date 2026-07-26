@@ -89,12 +89,12 @@ function DashboardLayout() {
     if (path === '/dashboard/commission-settings') return 'Pengaturan Komisi Platform';
     if (path === '/dashboard/supplier-map') return 'Peta Sebaran & Jangkauan Logistik Supplier';
     if (path === '/dashboard/admin-users') return 'Manajemen Akun User Supplier';
-    if (path === '/dashboard/finance') return 'Laporan Keuangan & Platform Fee B2B';
+    if (path === '/dashboard/finance') return 'Laporan Keuangan & Platform Fee Sentra IntiGizi';
     if (path === '/dashboard/katalog') return 'Manajemen Katalog Bahan Baku';
-    if (path === '/dashboard/orders') return 'Pesanan Masuk (B2B)';
+    if (path === '/dashboard/orders') return 'Pesanan Masuk (Sentra IntiGizi)';
     if (path === '/dashboard/supplier-finance') return 'Laporan Keuangan & Penjualan';
     if (path === '/dashboard/profile') return 'Profil Supplier';
-    return 'Portal B2B';
+    return 'Portal Sentra IntiGizi';
   };
 
   const navLinkClass = ({ isActive }) =>
