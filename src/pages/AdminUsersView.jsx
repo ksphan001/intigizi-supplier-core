@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../services/api';
-import { Users, Plus, Edit2, Trash2, Key, Loader2, Save, X } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, Key, Loader2, Save, X, Link } from 'lucide-react';
 
 function AdminUsersView() {
   const [users, setUsers] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -15,25 +16,30 @@ function AdminUsersView() {
     full_name: '',
     username: '',
     email: '',
-    password: ''
+    password: '',
+    supplier_id: ''
   });
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchUsers = async () => {
+  const fetchUsersAndSuppliers = async () => {
     setLoading(true);
     setError('');
     try {
-      const response = await apiClient.get('/admin_users.php');
-      setUsers(Array.isArray(response.data) ? response.data : []);
+      const [resUsers, resSuppliers] = await Promise.all([
+        apiClient.get('/admin_users.php'),
+        apiClient.get('/admin_suppliers.php')
+      ]);
+      setUsers(Array.isArray(resUsers.data) ? resUsers.data : []);
+      setSuppliers(Array.isArray(resSuppliers.data) ? resSuppliers.data : []);
     } catch (err) {
-      setError('Gagal memuat daftar user supplier.');
+      setError('Gagal memuat daftar user & supplier.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsersAndSuppliers();
   }, []);
 
   const handleOpenAdd = () => {
@@ -42,7 +48,8 @@ function AdminUsersView() {
       full_name: '',
       username: '',
       email: '',
-      password: ''
+      password: '',
+      supplier_id: ''
     });
     setShowModal(true);
   };
@@ -53,7 +60,8 @@ function AdminUsersView() {
       full_name: user.full_name || '',
       username: user.username || '',
       email: user.email || '',
-      password: '' // Kosongkan, hanya diisi jika ingin mereset password
+      password: '', // Kosongkan, hanya diisi jika ingin mereset password
+      supplier_id: user.supplier_id || ''
     });
     setShowModal(true);
   };
@@ -75,7 +83,8 @@ function AdminUsersView() {
           id: editingUser.id,
           full_name: formData.full_name,
           username: formData.username,
-          email: formData.email
+          email: formData.email,
+          supplier_id: formData.supplier_id || null
         };
         if (formData.password) {
           payload.password = formData.password;
@@ -88,7 +97,7 @@ function AdminUsersView() {
         setSuccess('Akun user supplier baru berhasil dibuat.');
       }
       setShowModal(false);
-      fetchUsers();
+      fetchUsersAndSuppliers();
     } catch (err) {
       setError(err.response?.data?.message || 'Gagal menyimpan akun user.');
     } finally {
@@ -97,13 +106,13 @@ function AdminUsersView() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Apakah Anda yakin ingin menghapus akun user ini? Menghapus akun ini juga akan menghapus profil supplier terkait.')) return;
+    if (!window.confirm('Apakah Anda yakin ingin menghapus akun user login ini?')) return;
     setError('');
     setSuccess('');
     try {
       await apiClient.delete('/admin_users.php', { data: { id } });
       setSuccess('Akun user supplier berhasil dihapus.');
-      fetchUsers();
+      fetchUsersAndSuppliers();
     } catch (err) {
       setError('Gagal menghapus user supplier.');
     }
@@ -163,6 +172,22 @@ function AdminUsersView() {
                   placeholder="Cth: Andi Pemasok"
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 font-mono">Tautkan Perusahaan Supplier Terdaftar</label>
+                <select
+                  name="supplier_id"
+                  value={formData.supplier_id}
+                  onChange={handleChange}
+                  className="input-style w-full text-xs py-2 bg-white"
+                >
+                  <option value="">-- Buat Profil Perusahaan Baru Otomatis --</option>
+                  {suppliers.map(s => (
+                    <option key={s.id} value={s.id}>{s.supplier_name} (ID: {s.id})</option>
+                  ))}
+                </select>
+                <p className="text-[9px] text-gray-400 mt-1">Gunakan dropdown ini jika perusahaan supplier sudah ada dalam sistem.</p>
               </div>
 
               <div>
@@ -247,6 +272,7 @@ function AdminUsersView() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
               <tr>
                 <th className="px-6 py-4">Nama Lengkap</th>
+                <th className="px-6 py-4">Perusahaan Terkait</th>
                 <th className="px-6 py-4">Username</th>
                 <th className="px-6 py-4">Email</th>
                 <th className="px-6 py-4">Tanggal Registrasi</th>
@@ -257,6 +283,16 @@ function AdminUsersView() {
               {users.map((u) => (
                 <tr key={u.id} className="hover:bg-gray-55 transition-colors">
                   <td className="px-6 py-4 font-bold text-gray-800">{u.full_name}</td>
+                  <td className="px-6 py-4 text-xs font-semibold text-gray-700">
+                    {u.supplier_name ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-50 text-green-800 border border-green-200">
+                        <Link size={10} />
+                        {u.supplier_name}
+                      </span>
+                    ) : (
+                      <span className="text-red-500 italic">Belum Tertaut</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 font-mono text-xs font-semibold text-gray-600">{u.username}</td>
                   <td className="px-6 py-4 font-medium text-gray-700">{u.email}</td>
                   <td className="px-6 py-4 text-gray-500">
