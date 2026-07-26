@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigat
 // Import CSS
 import './index.css';
 
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import CatalogView from './pages/CatalogView';
@@ -318,6 +319,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         
@@ -350,7 +352,7 @@ function App() {
           <Route path="profile" element={<ProfileView />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
