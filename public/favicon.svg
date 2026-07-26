@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <rect width="32" height="32" rx="8" fill="#F0FDF4" stroke="#DCFCE7" stroke-width="1"/>
   <!-- Custom IG Brand Lettering -->
-  <text x="6" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#16A34A">I</text>
+  <text x="6" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#16A34A">S</text>
   <text x="14" y="27" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" fill="#EA580C">G</text>
   <!-- Stylized leaf indicator dot -->
   <circle cx="21" cy="9" r="2.5" fill="#22C55E"/>
