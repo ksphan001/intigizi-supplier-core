@@ -15,6 +15,7 @@ import AllProductsView from './pages/AllProductsView';
 import ConnectedKitchensView from './pages/ConnectedKitchensView';
 import SupplierDashboardView from './pages/SupplierDashboardView';
 import CommissionSettingsView from './pages/CommissionSettingsView';
+import SupplierMapView from './pages/SupplierMapView';
 
 import {
   LayoutDashboard,
@@ -26,7 +27,8 @@ import {
   User,
   LogOut,
   ChevronDown,
-  Percent
+  Percent,
+  MapPin
 } from 'lucide-react';
 
 function Dashboard() {
@@ -51,6 +53,8 @@ function Dashboard() {
         return 'Koneksi Dapur Terhubung';
       case 'commission-settings':
         return 'Pengaturan Komisi Platform';
+      case 'supplier-map':
+        return 'Peta Sebaran & Jangkauan Logistik Supplier';
       case 'katalog':
         return 'Manajemen Katalog Bahan Baku';
       case 'orders':
@@ -78,7 +82,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'admin-dashboard'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
@@ -89,7 +93,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'verification'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <ShieldCheck size={18} className="mr-3 flex-shrink-0" />
@@ -100,7 +104,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'admin-products'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <Layers size={18} className="mr-3 flex-shrink-0" />
@@ -111,7 +115,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'connections'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <Link2 size={18} className="mr-3 flex-shrink-0" />
@@ -122,11 +126,22 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'commission-settings'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <Percent size={18} className="mr-3 flex-shrink-0" />
                 <span>Komisi Platform</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('supplier-map')}
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                  activeTab === 'supplier-map'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
+                }`}
+              >
+                <MapPin size={18} className="mr-3 flex-shrink-0" />
+                <span>Peta Sebaran Supplier</span>
               </button>
             </>
           ) : (
@@ -136,7 +151,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'supplier-dashboard'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
@@ -147,7 +162,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'katalog'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <Store size={18} className="mr-3 flex-shrink-0" />
@@ -158,7 +173,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'orders'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <ClipboardList size={18} className="mr-3 flex-shrink-0" />
@@ -169,7 +184,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'profile'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
+                    : 'text-gray-650 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <User size={18} className="mr-3 flex-shrink-0" />
@@ -250,6 +265,7 @@ function Dashboard() {
           )}
           {activeTab === 'connections' && <ConnectedKitchensView />}
           {activeTab === 'commission-settings' && <CommissionSettingsView />}
+          {activeTab === 'supplier-map' && <SupplierMapView />}
           {activeTab === 'katalog' && <CatalogView />}
           {activeTab === 'orders' && <OrdersView />}
           {activeTab === 'profile' && <ProfileView />}
