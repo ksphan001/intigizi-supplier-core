@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import apiClient from '../services/api';
-import { Store, ShieldCheck, ShieldAlert, Layers, Loader2 } from 'lucide-react';
+import { Store, ShieldCheck, ShieldAlert, Layers, Loader2, DollarSign, Percent, BarChart } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -21,6 +21,14 @@ function AdminSummaryView() {
 
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
+
+  const formatCurrency = (val) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(val || 0);
+  };
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -110,56 +118,115 @@ function AdminSummaryView() {
       <div className="bg-green-50 border border-green-150 p-6 rounded-2xl">
         <h3 className="text-lg font-bold text-green-800">Selamat datang, Super Admin B2B!</h3>
         <p className="text-xs text-green-700 mt-1 leading-relaxed">
-          Di halaman konsolidasi ini, Anda dapat memantau jaringan supplier nasional, melakukan verifikasi akun supplier baru agar layak dipesan dapur, dan memantau katalog produk.
+          Di halaman konsolidasi ini, Anda dapat memantau jaringan supplier nasional, melakukan verifikasi akun supplier baru agar layak dipesan dapur, memantau katalog produk, serta melacak total fee platform B2B.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* KPI 6 CARDS GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Card 1: Total Supplier */}
-        <div className="bg-white border rounded-2xl p-6 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500">
-            <Store size={24} />
+        <div className="bg-white border rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gray-55 flex items-center justify-center text-gray-500 flex-shrink-0">
+            <Store size={20} />
           </div>
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase">Total Supplier</p>
-            <p className="text-2xl font-extrabold text-gray-800">{stats?.total_suppliers || 0}</p>
+            <p className="text-[10px] text-gray-400 font-bold uppercase">Total Supplier</p>
+            <p className="text-lg font-extrabold text-gray-800">{stats?.total_suppliers || 0}</p>
           </div>
         </div>
 
         {/* Card 2: Verified Supplier */}
-        <div className="bg-white border rounded-2xl p-6 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
-            <ShieldCheck size={24} />
+        <div className="bg-white border rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-600 flex-shrink-0">
+            <ShieldCheck size={20} />
           </div>
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase">Terverifikasi</p>
-            <p className="text-2xl font-extrabold text-green-700">{stats?.verified_suppliers || 0}</p>
+            <p className="text-[10px] text-gray-400 font-bold uppercase">Terverifikasi</p>
+            <p className="text-lg font-extrabold text-green-700">{stats?.verified_suppliers || 0}</p>
           </div>
         </div>
 
         {/* Card 3: Pending Verification */}
-        <div className="bg-white border rounded-2xl p-6 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
-            <ShieldAlert size={24} />
+        <div className="bg-white border rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 flex-shrink-0">
+            <ShieldAlert size={20} />
           </div>
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase">Belum Verifikasi</p>
-            <p className="text-2xl font-extrabold text-amber-700">{stats?.unverified_suppliers || 0}</p>
+            <p className="text-[10px] text-gray-400 font-bold uppercase">Belum Verifikasi</p>
+            <p className="text-lg font-extrabold text-amber-700">{stats?.unverified_suppliers || 0}</p>
           </div>
         </div>
 
         {/* Card 4: Total Products */}
-        <div className="bg-white border rounded-2xl p-6 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-            <Layers size={24} />
+        <div className="bg-white border rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+            <Layers size={20} />
           </div>
           <div>
-            <p className="text-xs text-gray-400 font-bold uppercase">Total Produk</p>
-            <p className="text-2xl font-extrabold text-blue-700">{stats?.total_products || 0}</p>
+            <p className="text-[10px] text-gray-400 font-bold uppercase">Total Produk</p>
+            <p className="text-lg font-extrabold text-blue-700">{stats?.total_products || 0}</p>
+          </div>
+        </div>
+
+        {/* Card 5: Total GMV */}
+        <div className="bg-white border rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
+            <DollarSign size={20} />
+          </div>
+          <div>
+            <p className="text-[10px] text-gray-400 font-bold uppercase">Total GMV Omzet</p>
+            <p className="text-sm font-black text-emerald-700 truncate">{formatCurrency(stats?.total_gmv)}</p>
+          </div>
+        </div>
+
+        {/* Card 6: Platform Fee */}
+        <div className="bg-white border rounded-2xl p-4 shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 flex-shrink-0">
+            <Percent size={20} />
+          </div>
+          <div>
+            <p className="text-[10px] text-gray-400 font-bold uppercase">Fee Platform</p>
+            <p className="text-sm font-black text-purple-700 truncate">{formatCurrency(stats?.total_platform_fee)}</p>
           </div>
         </div>
       </div>
 
+      {/* Financial Table per Supplier */}
+      <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm">
+        <h4 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-1.5">
+          <BarChart size={18} className="text-green-600" />
+          <span>Laporan Keuangan & Kontribusi Fee Platform Supplier B2B</span>
+        </h4>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left text-gray-500">
+            <thead className="text-[10px] text-gray-400 font-bold uppercase bg-gray-55 border-b">
+              <tr>
+                <th className="px-6 py-3">Nama Supplier</th>
+                <th className="px-6 py-3 text-center">Total Order Sukses</th>
+                <th className="px-6 py-3 text-right">Omzet Kotor (GMV)</th>
+                <th className="px-6 py-3 text-right">Fee Platform Disetor (3-5%)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {stats?.supplier_financials?.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50/50">
+                  <td className="px-6 py-3.5 font-bold text-gray-800">{item.supplier_name}</td>
+                  <td className="px-6 py-3.5 text-center font-semibold text-gray-700">{item.total_orders} Order</td>
+                  <td className="px-6 py-3.5 text-right font-bold text-gray-700">{formatCurrency(item.total_gmv)}</td>
+                  <td className="px-6 py-3.5 text-right font-black text-purple-650">{formatCurrency(item.total_fee)}</td>
+                </tr>
+              ))}
+              {(!stats?.supplier_financials || stats.supplier_financials.length === 0) && (
+                <tr>
+                  <td colSpan="4" className="text-center py-6 text-gray-400 italic">Belum ada data transaksi finansial terekam.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Leaflet Map Sebaran */}
       <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm">
         <h4 className="text-sm font-bold text-gray-800 mb-4">Peta Sebaran Supplier B2B</h4>
         <div ref={mapContainerRef} className="h-96 rounded-xl border border-gray-200 overflow-hidden relative z-0" />
@@ -172,7 +239,7 @@ function AdminSummaryView() {
           <h4 className="text-sm font-bold text-gray-850 mb-4">🏆 Peringkat Keandalan SLA Supplier</h4>
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left text-gray-500">
-              <thead className="text-[10px] text-gray-400 font-bold uppercase tracking-wider bg-gray-50 border-b">
+              <thead className="text-[10px] text-gray-400 font-bold uppercase tracking-wider bg-gray-55 border-b">
                 <tr>
                   <th className="px-4 py-2.5">Supplier</th>
                   <th className="px-4 py-2.5 text-center">Rating</th>

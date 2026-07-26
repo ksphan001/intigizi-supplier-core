@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Loader2, Settings, Percent } from 'lucide-react';
+import apiClient from '../services/api';
 
 function CommissionSettingsView() {
   const [commissions, setCommissions] = useState({
@@ -13,14 +14,17 @@ function CommissionSettingsView() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const saved = localStorage.getItem('platformCommissions');
-    if (saved) {
+    const fetchCommissions = async () => {
       try {
-        setCommissions(JSON.parse(saved));
+        const response = await apiClient.get('/admin_commissions.php');
+        if (response.data && typeof response.data === 'object' && Object.keys(response.data).length > 0) {
+          setCommissions(response.data);
+        }
       } catch (err) {
-        console.error("Gagal memuat data komisi", err);
+        console.error("Gagal memuat data komisi dari server", err);
       }
-    }
+    };
+    fetchCommissions();
   }, []);
 
   const handleChange = (cat, val) => {
@@ -30,16 +34,18 @@ function CommissionSettingsView() {
     }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
     setMessage('');
-    
-    setTimeout(() => {
-      localStorage.setItem('platformCommissions', JSON.stringify(commissions));
-      setMessage('Pengaturan komisi platform berhasil disimpan!');
+    try {
+      await apiClient.put('/admin_commissions.php', commissions);
+      setMessage('Pengaturan komisi platform berhasil disimpan ke database!');
+    } catch (err) {
+      setMessage('Gagal menyimpan pengaturan komisi.');
+    } finally {
       setSaving(false);
-    }, 600);
+    }
   };
 
   return (
