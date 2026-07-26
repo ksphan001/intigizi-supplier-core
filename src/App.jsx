@@ -16,6 +16,7 @@ import ConnectedKitchensView from './pages/ConnectedKitchensView';
 import SupplierDashboardView from './pages/SupplierDashboardView';
 import CommissionSettingsView from './pages/CommissionSettingsView';
 import SupplierMapView from './pages/SupplierMapView';
+import AdminUsersView from './pages/AdminUsersView';
 
 import {
   LayoutDashboard,
@@ -28,7 +29,8 @@ import {
   LogOut,
   ChevronDown,
   Percent,
-  MapPin
+  MapPin,
+  Users
 } from 'lucide-react';
 
 function Dashboard() {
@@ -55,6 +57,8 @@ function Dashboard() {
         return 'Pengaturan Komisi Platform';
       case 'supplier-map':
         return 'Peta Sebaran & Jangkauan Logistik Supplier';
+      case 'admin-users':
+        return 'Manajemen Akun User Supplier';
       case 'katalog':
         return 'Manajemen Katalog Bahan Baku';
       case 'orders':
@@ -142,6 +146,17 @@ function Dashboard() {
               >
                 <MapPin size={18} className="mr-3 flex-shrink-0" />
                 <span>Peta Sebaran Supplier</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('admin-users')}
+                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                  activeTab === 'admin-users'
+                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
+                }`}
+              >
+                <Users size={18} className="mr-3 flex-shrink-0" />
+                <span>User Supplier</span>
               </button>
             </>
           ) : (
@@ -266,6 +281,7 @@ function Dashboard() {
           {activeTab === 'connections' && <ConnectedKitchensView />}
           {activeTab === 'commission-settings' && <CommissionSettingsView />}
           {activeTab === 'supplier-map' && <SupplierMapView />}
+          {activeTab === 'admin-users' && <AdminUsersView />}
           {activeTab === 'katalog' && <CatalogView />}
           {activeTab === 'orders' && <OrdersView />}
           {activeTab === 'profile' && <ProfileView />}
