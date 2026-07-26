@@ -142,7 +142,7 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
   const handleToggleVerify = async (supplier, currentStatus) => {
     setActionId(supplier.id);
     setMessage('');
-    const newStatus = currentStatus === 1 ? 0 : 1;
+    const newStatus = parseInt(currentStatus) === 1 ? 0 : 1;
     try {
       await apiClient.put('/admin_suppliers.php', { id: supplier.id, is_verified: newStatus });
       setMessage('Status verifikasi supplier berhasil diperbarui!');
@@ -201,14 +201,14 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
               onClick={() => handleToggleVerify(activeSupplier, activeSupplier.is_verified)}
               disabled={actionId === activeSupplier.id}
               className={`px-4 py-2 rounded-xl text-xs font-bold text-white transition-all cursor-pointer shadow-sm ${
-                activeSupplier.is_verified === 1
+                parseInt(activeSupplier.is_verified) === 1
                   ? 'bg-red-600 hover:bg-red-700'
                   : 'bg-green-600 hover:bg-green-700'
               }`}
             >
               {actionId === activeSupplier.id ? (
                 <Loader2 className="animate-spin" size={14} />
-              ) : activeSupplier.is_verified === 1 ? (
+              ) : parseInt(activeSupplier.is_verified) === 1 ? (
                 'Tangguhkan Verifikasi'
               ) : (
                 'Setujui & Verifikasi Akun'
@@ -533,7 +533,7 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
                     <p className="text-xs text-gray-400 font-mono mt-0.5">{item.phone_number}</p>
                   </td>
                   <td className="px-6 py-4">
-                    {item.is_verified === 1 ? (
+                    {parseInt(item.is_verified) === 1 ? (
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
                         <CheckCircle2 size={12} /> Verified
                       </span>
