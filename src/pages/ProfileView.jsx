@@ -23,7 +23,13 @@ function ProfileView() {
     address: '',
     latitude: '',
     longitude: '',
-    coverage_radius_km: 15
+    coverage_radius_km: 15,
+    nib_number: '',
+    halal_cert_number: '',
+    siup_number: '',
+    npwp_number: '',
+    prima3_cert_number: '',
+    bank_account_info: ''
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -62,7 +68,13 @@ function ProfileView() {
           address: data.address || '',
           latitude: data.latitude || '',
           longitude: data.longitude || '',
-          coverage_radius_km: data.coverage_radius_km || 15
+          coverage_radius_km: data.coverage_radius_km || 15,
+          nib_number: data.nib_number || '',
+          halal_cert_number: data.halal_cert_number || '',
+          siup_number: data.siup_number || '',
+          npwp_number: data.npwp_number || '',
+          prima3_cert_number: data.prima3_cert_number || '',
+          bank_account_info: data.bank_account_info || ''
         });
       } catch (err) {
         console.error("Gagal memuat profil", err);
@@ -299,6 +311,79 @@ function ProfileView() {
                   required
                 />
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section Legalitas & Administrasi */}
+        <div className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
+          <h3 className="text-sm font-bold text-gray-800 border-b pb-2">💼 Dokumen Legalitas & Informasi Bank (B2B Compliance)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nomor NIB (Nomor Induk Berusaha)</label>
+              <input
+                type="text"
+                name="nib_number"
+                value={formData.nib_number}
+                onChange={handleChange}
+                placeholder="cth: 120983948293..."
+                className="input-style w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nomor Sertifikat Halal MUI</label>
+              <input
+                type="text"
+                name="halal_cert_number"
+                value={formData.halal_cert_number}
+                onChange={handleChange}
+                placeholder="cth: ID-32984920..."
+                className="input-style w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nomor SIUP</label>
+              <input
+                type="text"
+                name="siup_number"
+                value={formData.siup_number}
+                onChange={handleChange}
+                placeholder="cth: 503/SIUP/2026..."
+                className="input-style w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nomor Pokok Wajib Pajak (NPWP)</label>
+              <input
+                type="text"
+                name="npwp_number"
+                value={formData.npwp_number}
+                onChange={handleChange}
+                placeholder="cth: 81.239.094.2..."
+                className="input-style w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nomor Sertifikat Prima 3</label>
+              <input
+                type="text"
+                name="prima3_cert_number"
+                value={formData.prima3_cert_number}
+                onChange={handleChange}
+                placeholder="cth: REG-PR3/2026..."
+                className="input-style w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nomor Rekening & Bank Penerima</label>
+              <input
+                type="text"
+                name="bank_account_info"
+                value={formData.bank_account_info}
+                onChange={handleChange}
+                placeholder="cth: BCA - 8023849182 a/n Toko..."
+                className="input-style w-full"
+              />
             </div>
           </div>
         </div>

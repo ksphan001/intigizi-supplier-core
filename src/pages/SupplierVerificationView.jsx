@@ -270,32 +270,44 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
                   <span className="text-lg block">📄</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor NIB</span>
-                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">120983948293-{activeSupplier.id}</span>
+                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.nib_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
+                    {activeSupplier.nib_number || 'Belum diisi'}
+                  </span>
                 </div>
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
                   <span className="text-lg block">📜</span>
                   <span className="text-[10px] font-bold text-emerald-700 block mt-1">Sertifikat Halal</span>
-                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">MUI ID-32984920</span>
+                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.halal_cert_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
+                    {activeSupplier.halal_cert_number || 'Belum diisi'}
+                  </span>
                 </div>
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
                   <span className="text-lg block">💼</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor SIUP</span>
-                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">503/SIUP/2026</span>
+                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.siup_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
+                    {activeSupplier.siup_number || 'Belum diisi'}
+                  </span>
                 </div>
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
                   <span className="text-lg block">💳</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">NPWP Pemasok</span>
-                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">81.239.094.2-012.{String(activeSupplier.id).padStart(3, '0')}</span>
+                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.npwp_number ? 'text-gray-650' : 'text-red-500 italic'}`}>
+                    {activeSupplier.npwp_number || 'Belum diisi'}
+                  </span>
                 </div>
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
                   <span className="text-lg block">🛡️</span>
                   <span className="text-[10px] font-bold text-indigo-700 block mt-1">Sertifikat Prima 3</span>
-                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">REG-PR3/2026/092</span>
+                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.prima3_cert_number ? 'text-gray-650' : 'text-red-500 italic'}`}>
+                    {activeSupplier.prima3_cert_number || 'Belum diisi'}
+                  </span>
                 </div>
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
                   <span className="text-lg block">🏦</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">Rekening Bank</span>
-                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">BCA {String(10928394 + parseInt(activeSupplier.id || 0))}</span>
+                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.bank_account_info ? 'text-gray-650 font-mono' : 'text-red-500 italic'}`}>
+                    {activeSupplier.bank_account_info || 'Belum diisi'}
+                  </span>
                 </div>
               </div>
             </div>
