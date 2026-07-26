@@ -60,7 +60,7 @@ function Dashboard() {
       case 'orders':
         return 'Pesanan Masuk (B2B)';
       case 'profile':
-        return 'Profil & Lokasi GPS Toko';
+        return 'Profil Supplier';
       default:
         return 'Portal B2B Supplier';
     }
@@ -188,7 +188,7 @@ function Dashboard() {
                 }`}
               >
                 <User size={18} className="mr-3 flex-shrink-0" />
-                <span>Profil Toko</span>
+                <span>Profil Supplier</span>
               </button>
             </>
           )}
@@ -227,7 +227,7 @@ function Dashboard() {
                     className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                   >
                     <User size={14} className="text-gray-400" />
-                    <span>Profil Toko</span>
+                    <span>Profil Supplier</span>
                   </button>
                 )}
 

@@ -384,9 +384,17 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-center items-center min-h-[110px] col-span-2 md:col-span-1">
                   <span className="text-lg block">🏦</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">Rekening Bank</span>
-                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.bank_account_info ? 'text-gray-650 font-mono' : 'text-red-500 italic'}`}>
-                    {activeSupplier.bank_account_info || 'Belum diisi'}
-                  </span>
+                  {activeSupplier.bank_account_number ? (
+                    <div className="text-[9px] text-gray-600 font-medium mt-0.5 space-y-0.5">
+                      <p className="font-extrabold text-gray-800">{activeSupplier.bank_name}</p>
+                      <p className="font-mono text-emerald-700 font-bold">{activeSupplier.bank_account_number}</p>
+                      <p className="text-[8px] text-gray-400 font-bold uppercase">a/n {activeSupplier.bank_owner_name}</p>
+                    </div>
+                  ) : (
+                    <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.bank_account_info ? 'text-gray-650' : 'text-red-500 italic'}`}>
+                      {activeSupplier.bank_account_info || 'Belum diisi'}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
