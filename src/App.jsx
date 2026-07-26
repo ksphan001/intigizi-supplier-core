@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation, useNavigate, NavLink } from 'react-router-dom';
 
 // Import CSS
 import './index.css';
@@ -33,42 +33,71 @@ import {
   Users
 } from 'lucide-react';
 
-function Dashboard() {
+function DashboardIndex() {
   const user = JSON.parse(localStorage.getItem('supplierUser') || '{}');
   const isAdmin = parseInt(user.role_id) === 8;
+  return <Navigate to={isAdmin ? "/dashboard/admin" : "/dashboard/supplier-dashboard"} replace />;
+}
 
-  const [activeTab, setActiveTab] = useState(isAdmin ? 'admin-dashboard' : 'supplier-dashboard');
+// Wrapper for SupplierVerificationView to read location state passed during navigation
+function SupplierVerificationViewWrapper() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const preselectedSupplierName = location.state?.supplierName || null;
+
+  const handleClearPreselected = () => {
+    // Clear state in history to prevent re-expanding on refreshes
+    navigate(location.pathname, { replace: true, state: {} });
+  };
+
+  return (
+    <SupplierVerificationView
+      preselectedSupplierName={preselectedSupplierName}
+      onClearPreselected={handleClearPreselected}
+    />
+  );
+}
+
+// Wrapper for AllProductsView to handle navigation callback using useNavigate
+function AllProductsViewWrapper() {
+  const navigate = useNavigate();
+  return (
+    <AllProductsView
+      onNavigateToSupplier={(supplierName) => {
+        navigate('/dashboard/verification', { state: { supplierName } });
+      }}
+    />
+  );
+}
+
+function DashboardLayout() {
+  const user = JSON.parse(localStorage.getItem('supplierUser') || '{}');
+  const isAdmin = parseInt(user.role_id) === 8;
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [selectedAdminSupplier, setSelectedAdminSupplier] = useState(null);
+  const location = useLocation();
 
   const getHeaderTitle = () => {
-    switch (activeTab) {
-      case 'admin-dashboard':
-        return 'Dashboard Consolidation Super Admin';
-      case 'supplier-dashboard':
-        return 'Dasbor Finansial & Analitik Toko';
-      case 'verification':
-        return 'Manajemen Daftar Supplier';
-      case 'admin-products':
-        return 'Katalog Produk Global';
-      case 'connections':
-        return 'Koneksi Dapur Terhubung';
-      case 'commission-settings':
-        return 'Pengaturan Komisi Platform';
-      case 'supplier-map':
-        return 'Peta Sebaran & Jangkauan Logistik Supplier';
-      case 'admin-users':
-        return 'Manajemen Akun User Supplier';
-      case 'katalog':
-        return 'Manajemen Katalog Bahan Baku';
-      case 'orders':
-        return 'Pesanan Masuk (B2B)';
-      case 'profile':
-        return 'Profil Supplier';
-      default:
-        return 'Portal B2B Supplier';
-    }
+    const path = location.pathname;
+    if (path.includes('/dashboard/admin')) return 'Dashboard Consolidation Super Admin';
+    if (path.includes('/dashboard/supplier-dashboard')) return 'Dasbor Finansial & Analitik Toko';
+    if (path.includes('/dashboard/verification')) return 'Manajemen Daftar Supplier';
+    if (path.includes('/dashboard/admin-products')) return 'Katalog Produk Global';
+    if (path.includes('/dashboard/connections')) return 'Koneksi Dapur Terhubung';
+    if (path.includes('/dashboard/commission-settings')) return 'Pengaturan Komisi Platform';
+    if (path.includes('/dashboard/supplier-map')) return 'Peta Sebaran & Jangkauan Logistik Supplier';
+    if (path.includes('/dashboard/admin-users')) return 'Manajemen Akun User Supplier';
+    if (path.includes('/dashboard/katalog')) return 'Manajemen Katalog Bahan Baku';
+    if (path.includes('/dashboard/orders')) return 'Pesanan Masuk (B2B)';
+    if (path.includes('/dashboard/profile')) return 'Profil Supplier';
+    return 'Portal B2B Supplier';
   };
+
+  const navLinkClass = ({ isActive }) =>
+    `w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+      isActive
+        ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
+        : 'text-gray-650 hover:bg-gray-55 hover:text-green-700'
+    }`;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -81,130 +110,53 @@ function Dashboard() {
         <nav className="space-y-1">
           {isAdmin ? (
             <>
-              <button
-                onClick={() => setActiveTab('admin-dashboard')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'admin-dashboard'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              <NavLink to="/dashboard/admin" className={navLinkClass}>
                 <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
                 <span>Dashboard Admin</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('verification')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'verification'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/verification" className={navLinkClass}>
                 <ShieldCheck size={18} className="mr-3 flex-shrink-0" />
                 <span>Daftar Supplier</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('admin-products')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'admin-products'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/admin-products" className={navLinkClass}>
                 <Layers size={18} className="mr-3 flex-shrink-0" />
                 <span>Katalog Produk Global</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('connections')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'connections'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/connections" className={navLinkClass}>
                 <Link2 size={18} className="mr-3 flex-shrink-0" />
                 <span>Koneksi Dapur Terhubung</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('commission-settings')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'commission-settings'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/commission-settings" className={navLinkClass}>
                 <Percent size={18} className="mr-3 flex-shrink-0" />
                 <span>Komisi Platform</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('supplier-map')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'supplier-map'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/supplier-map" className={navLinkClass}>
                 <MapPin size={18} className="mr-3 flex-shrink-0" />
                 <span>Peta Sebaran Supplier</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('admin-users')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'admin-users'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/admin-users" className={navLinkClass}>
                 <Users size={18} className="mr-3 flex-shrink-0" />
                 <span>User Supplier</span>
-              </button>
+              </NavLink>
             </>
           ) : (
             <>
-              <button
-                onClick={() => setActiveTab('supplier-dashboard')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'supplier-dashboard'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              <NavLink to="/dashboard/supplier-dashboard" className={navLinkClass}>
                 <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
                 <span>Dasbor Toko</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('katalog')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'katalog'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/katalog" className={navLinkClass}>
                 <Store size={18} className="mr-3 flex-shrink-0" />
                 <span>Katalog Saya</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('orders')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'orders'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/orders" className={navLinkClass}>
                 <ClipboardList size={18} className="mr-3 flex-shrink-0" />
                 <span>Pesanan Masuk</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === 'profile'
-                    ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-650 hover:bg-gray-55 hover:text-green-700'
-                }`}
-              >
+              </NavLink>
+              <NavLink to="/dashboard/profile" className={navLinkClass}>
                 <User size={18} className="mr-3 flex-shrink-0" />
                 <span>Profil Supplier</span>
-              </button>
+              </NavLink>
             </>
           )}
         </nav>
@@ -234,16 +186,14 @@ function Dashboard() {
                 </div>
                 
                 {!isAdmin && (
-                  <button
-                    onClick={() => {
-                      setActiveTab('profile');
-                      setShowProfileMenu(false);
-                    }}
+                  <NavLink
+                    to="/dashboard/profile"
+                    onClick={() => setShowProfileMenu(false)}
                     className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                   >
                     <User size={14} className="text-gray-400" />
                     <span>Profil Supplier</span>
-                  </button>
+                  </NavLink>
                 )}
 
                 <button
@@ -262,33 +212,20 @@ function Dashboard() {
         </header>
 
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          {activeTab === 'admin-dashboard' && <AdminSummaryView />}
-          {activeTab === 'supplier-dashboard' && <SupplierDashboardView />}
-          {activeTab === 'verification' && (
-            <SupplierVerificationView
-              preselectedSupplierName={selectedAdminSupplier}
-              onClearPreselected={() => setSelectedAdminSupplier(null)}
-            />
-          )}
-          {activeTab === 'admin-products' && (
-            <AllProductsView
-              onNavigateToSupplier={(supplierName) => {
-                setSelectedAdminSupplier(supplierName);
-                setActiveTab('verification');
-              }}
-            />
-          )}
-          {activeTab === 'connections' && <ConnectedKitchensView />}
-          {activeTab === 'commission-settings' && <CommissionSettingsView />}
-          {activeTab === 'supplier-map' && <SupplierMapView />}
-          {activeTab === 'admin-users' && <AdminUsersView />}
-          {activeTab === 'katalog' && <CatalogView />}
-          {activeTab === 'orders' && <OrdersView />}
-          {activeTab === 'profile' && <ProfileView />}
+          <Outlet />
         </div>
       </main>
     </div>
   );
+}
+
+// Protected Route Guard helper
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('supplierToken');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
 }
 
 function App() {
@@ -297,7 +234,34 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* Dashboard Nested Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<DashboardIndex />} />
+          
+          {/* Admin Sub-routes */}
+          <Route path="admin" element={<AdminSummaryView />} />
+          <Route path="verification" element={<SupplierVerificationViewWrapper />} />
+          <Route path="admin-products" element={<AllProductsViewWrapper />} />
+          <Route path="connections" element={<ConnectedKitchensView />} />
+          <Route path="commission-settings" element={<CommissionSettingsView />} />
+          <Route path="supplier-map" element={<SupplierMapView />} />
+          <Route path="admin-users" element={<AdminUsersView />} />
+          
+          {/* Supplier Sub-routes */}
+          <Route path="supplier-dashboard" element={<SupplierDashboardView />} />
+          <Route path="katalog" element={<CatalogView />} />
+          <Route path="orders" element={<OrdersView />} />
+          <Route path="profile" element={<ProfileView />} />
+        </Route>
+
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
