@@ -18,6 +18,7 @@ import CommissionSettingsView from './pages/CommissionSettingsView';
 import SupplierMapView from './pages/SupplierMapView';
 import AdminUsersView from './pages/AdminUsersView';
 import AdminFinanceView from './pages/AdminFinanceView';
+import SupplierDealsView from './pages/SupplierDealsView';
 
 import {
   LayoutDashboard,
@@ -32,7 +33,8 @@ import {
   Percent,
   MapPin,
   Users,
-  DollarSign
+  DollarSign,
+  Handshake
 } from 'lucide-react';
 
 function DashboardIndex() {
@@ -88,6 +90,7 @@ function DashboardLayout() {
     if (path === '/dashboard/commission-settings') return 'Pengaturan Komisi Platform';
     if (path === '/dashboard/supplier-map') return 'Peta Sebaran & Jangkauan Logistik Supplier';
     if (path === '/dashboard/admin-users') return 'Manajemen Akun User Supplier';
+    if (path === '/dashboard/supplier-deals') return 'Kesepakatan Komisi Kustom Per Supplier';
     if (path === '/dashboard/finance') return 'Laporan Keuangan & Platform Fee B2B';
     if (path === '/dashboard/katalog') return 'Manajemen Katalog Bahan Baku';
     if (path === '/dashboard/orders') return 'Pesanan Masuk (B2B)';
@@ -164,6 +167,10 @@ function DashboardLayout() {
                     <NavLink to="/dashboard/commission-settings" className={navLinkClass}>
                       <Percent size={18} className="mr-3 flex-shrink-0 text-gray-400" />
                       <span>Komisi Platform</span>
+                    </NavLink>
+                    <NavLink to="/dashboard/supplier-deals" className={navLinkClass}>
+                      <Handshake size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Kesepakatan Supplier</span>
                     </NavLink>
                     <NavLink to="/dashboard/finance" className={navLinkClass}>
                       <DollarSign size={18} className="mr-3 flex-shrink-0 text-gray-400" />
@@ -334,6 +341,7 @@ function App() {
           <Route path="commission-settings" element={<CommissionSettingsView />} />
           <Route path="supplier-map" element={<SupplierMapView />} />
           <Route path="admin-users" element={<AdminUsersView />} />
+          <Route path="supplier-deals" element={<SupplierDealsView />} />
           <Route path="finance" element={<AdminFinanceView />} />
           
           {/* Supplier Sub-routes */}

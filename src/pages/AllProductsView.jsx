@@ -6,19 +6,26 @@ import {
   CheckCircle2,
   AlertCircle,
   UserCog,
-  ArrowUpDown,
-  Filter
+  Percent,
+  Save,
+  X,
+  Edit2,
+  Tag
 } from 'lucide-react';
 
 function AllProductsView({ onNavigateToSupplier }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  
-  // Filters & Sorting states
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [selectedStatus, setSelectedStatus] = useState('Semua');
   const [selectedSort, setSelectedSort] = useState('name-asc');
+
+  // Komisi kustom inline editing state
+  const [editingId, setEditingId] = useState(null);
+  const [editPct, setEditPct] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState(null);
 
   const [commissions, setCommissions] = useState({
     'Lauk Protein': 5,
@@ -31,11 +38,7 @@ function AllProductsView({ onNavigateToSupplier }) {
   useEffect(() => {
     const saved = localStorage.getItem('platformCommissions');
     if (saved) {
-      try {
-        setCommissions(JSON.parse(saved));
-      } catch (err) {
-        console.error("Gagal membaca komisi", err);
-      }
+      try { setCommissions(JSON.parse(saved)); } catch (err) {}
     }
   }, []);
 
@@ -51,82 +54,88 @@ function AllProductsView({ onNavigateToSupplier }) {
     }
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  useEffect(() => { fetchProducts(); }, []);
 
   const getCategory = (name) => {
     const lowercase = name.toLowerCase();
-    if (lowercase.includes('daging') || lowercase.includes('ayam') || lowercase.includes('bebek') || lowercase.includes('telur') || lowercase.includes('kambing') || lowercase.includes('ati') || lowercase.includes('puyuh') || lowercase.includes('ikan') || lowercase.includes('susu')) {
-      return 'Lauk Protein';
-    }
-    if (lowercase.includes('beras') || lowercase.includes('kentang') || lowercase.includes('oat') || lowercase.includes('tepung')) {
-      return 'Makanan Pokok';
-    }
-    if (lowercase.includes('wortel') || lowercase.includes('bayam') || lowercase.includes('bumbu') || lowercase.includes('tempe') || lowercase.includes('tahu') || lowercase.includes('sayur') || lowercase.includes('bawang') || lowercase.includes('cabe')) {
-      return 'Sayuran & Lauk Nabati';
-    }
-    if (lowercase.includes('pisang') || lowercase.includes('melon') || lowercase.includes('air') || lowercase.includes('jus') || lowercase.includes('buah')) {
-      return 'Buah & Minuman';
-    }
+    if (lowercase.includes('daging') || lowercase.includes('ayam') || lowercase.includes('bebek') || lowercase.includes('telur') || lowercase.includes('kambing') || lowercase.includes('ati') || lowercase.includes('puyuh') || lowercase.includes('ikan') || lowercase.includes('susu')) return 'Lauk Protein';
+    if (lowercase.includes('beras') || lowercase.includes('kentang') || lowercase.includes('oat') || lowercase.includes('tepung')) return 'Makanan Pokok';
+    if (lowercase.includes('wortel') || lowercase.includes('bayam') || lowercase.includes('bumbu') || lowercase.includes('tempe') || lowercase.includes('tahu') || lowercase.includes('sayur') || lowercase.includes('bawang') || lowercase.includes('cabe')) return 'Sayuran & Lauk Nabati';
+    if (lowercase.includes('pisang') || lowercase.includes('melon') || lowercase.includes('air') || lowercase.includes('jus') || lowercase.includes('buah')) return 'Buah & Minuman';
     return 'Lain-lain';
+  };
+
+  // Simpan komisi kustom per item
+  const handleSaveCustomCommission = async (productId) => {
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const pct = editPct === '' ? null : parseFloat(editPct);
+      await apiClient.post('/admin_products.php', {
+        action: 'set_custom_commission',
+        id: productId,
+        custom_commission_pct: pct
+      });
+      setSaveMsg({ type: 'success', text: pct === null ? 'Komisi kustom dihapus.' : `Komisi kustom ${pct}% disimpan.` });
+      setEditingId(null);
+      fetchProducts();
+    } catch (err) {
+      setSaveMsg({ type: 'error', text: 'Gagal menyimpan komisi kustom.' });
+    } finally {
+      setSaving(false);
+      setTimeout(() => setSaveMsg(null), 3000);
+    }
   };
 
   // Filter & Sort Logic
   const processedProducts = useMemo(() => {
     let list = [...products];
-
-    // 1. Keyword search (Name or Supplier)
     if (search.trim() !== '') {
       const query = search.toLowerCase();
-      list = list.filter(p => 
+      list = list.filter(p =>
         p.ingredient_name.toLowerCase().includes(query) ||
         p.supplier_name.toLowerCase().includes(query)
       );
     }
-
-    // 2. Category Filter
     if (selectedCategory !== 'Semua') {
       list = list.filter(p => getCategory(p.ingredient_name) === selectedCategory);
     }
-
-    // 3. Status Filter
     if (selectedStatus !== 'Semua') {
       const targetActive = selectedStatus === 'Aktif' ? 1 : 0;
       list = list.filter(p => parseInt(p.is_active) === targetActive);
     }
-
-    // 4. Sort
     list.sort((a, b) => {
-      if (selectedSort === 'name-asc') {
-        return a.ingredient_name.localeCompare(b.ingredient_name);
-      }
-      if (selectedSort === 'price-asc') {
-        return parseFloat(a.base_price) - parseFloat(b.base_price);
-      }
-      if (selectedSort === 'price-desc') {
-        return parseFloat(b.base_price) - parseFloat(a.base_price);
-      }
-      if (selectedSort === 'capacity-desc') {
-        return parseFloat(b.daily_capacity) - parseFloat(a.daily_capacity);
-      }
+      if (selectedSort === 'name-asc') return a.ingredient_name.localeCompare(b.ingredient_name);
+      if (selectedSort === 'price-asc') return parseFloat(a.base_price) - parseFloat(b.base_price);
+      if (selectedSort === 'price-desc') return parseFloat(b.base_price) - parseFloat(a.base_price);
+      if (selectedSort === 'capacity-desc') return parseFloat(b.daily_capacity) - parseFloat(a.daily_capacity);
       return 0;
     });
-
     return list;
   }, [products, search, selectedCategory, selectedStatus, selectedSort]);
 
-  const formatCurrency = (val) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(val);
-  };
+  const formatCurrency = (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
 
   return (
     <div className="space-y-6">
-      {/* Modern Filter Dashboard Controls */}
+      {/* Notifikasi Save */}
+      {saveMsg && (
+        <div className={`px-4 py-3 rounded-xl text-sm font-semibold border flex items-center gap-2 ${saveMsg.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+          {saveMsg.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          {saveMsg.text}
+        </div>
+      )}
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-xs text-amber-800">
+        <Tag size={14} className="flex-shrink-0" />
+        <span className="font-bold">Hirarki Komisi:</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block" /> Kustom Per Item (Prioritas 1)</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" /> Flat Rate Per Supplier (Prioritas 2)</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-gray-400 inline-block" /> Tarif Kategori Global (Default)</span>
+      </div>
+
+      {/* Filter Controls */}
       <div className="bg-gray-50 p-5 rounded-2xl border border-gray-150 flex flex-wrap gap-4 items-end shadow-sm">
         <div className="flex-1 min-w-[200px]">
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Cari Bahan / Supplier</label>
@@ -144,11 +153,7 @@ function AllProductsView({ onNavigateToSupplier }) {
 
         <div className="w-[180px]">
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Kategori</label>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="input-style w-full h-[38px] mt-0 text-xs py-1"
-          >
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="input-style w-full h-[38px] mt-0 text-xs py-1">
             <option value="Semua">Semua Kategori</option>
             <option value="Lauk Protein">Lauk Protein</option>
             <option value="Makanan Pokok">Makanan Pokok</option>
@@ -160,11 +165,7 @@ function AllProductsView({ onNavigateToSupplier }) {
 
         <div className="w-[150px]">
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status Keaktifan</label>
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="input-style w-full h-[38px] mt-0 text-xs py-1"
-          >
+          <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="input-style w-full h-[38px] mt-0 text-xs py-1">
             <option value="Semua">Semua Status</option>
             <option value="Aktif">Aktif / Publik</option>
             <option value="Ditangguhkan">Ditangguhkan</option>
@@ -173,11 +174,7 @@ function AllProductsView({ onNavigateToSupplier }) {
 
         <div className="w-[180px]">
           <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Urutan Data</label>
-          <select
-            value={selectedSort}
-            onChange={(e) => setSelectedSort(e.target.value)}
-            className="input-style w-full h-[38px] mt-0 text-xs py-1"
-          >
+          <select value={selectedSort} onChange={(e) => setSelectedSort(e.target.value)} className="input-style w-full h-[38px] mt-0 text-xs py-1">
             <option value="name-asc">Nama Bahan Baku (A-Z)</option>
             <option value="price-asc">Harga Dasar Terendah</option>
             <option value="price-desc">Harga Dasar Tertinggi</option>
@@ -209,7 +206,7 @@ function AllProductsView({ onNavigateToSupplier }) {
                 <th className="px-6 py-4">Supplier / Pemasok</th>
                 <th className="px-6 py-4">Harga Dasar</th>
                 <th className="px-6 py-4">Komisi Platform</th>
-                <th className="px-6 py-4">Kapasitas Harian</th>
+                <th className="px-6 py-4">Komisi Kustom Item</th>
                 <th className="px-6 py-4">Status Layanan</th>
                 <th className="px-6 py-4 text-center">Kelola</th>
               </tr>
@@ -220,6 +217,8 @@ function AllProductsView({ onNavigateToSupplier }) {
                 const rate = commissions[cat] || 0;
                 const commissionVal = (parseFloat(item.base_price) * rate) / 100;
                 const netVal = parseFloat(item.base_price) - commissionVal;
+                const hasCustom = item.custom_commission_pct !== null && item.custom_commission_pct !== undefined;
+                const isEditing = editingId === item.id;
 
                 return (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
@@ -243,9 +242,62 @@ function AllProductsView({ onNavigateToSupplier }) {
                       <span>{formatCurrency(commissionVal)}</span>
                       <span className="text-[10px] text-gray-400 font-bold block">({rate}% Fee | Net: {formatCurrency(netVal)})</span>
                     </td>
-                    <td className="px-6 py-4 text-gray-600 font-medium">
-                      {parseFloat(item.daily_capacity).toLocaleString('id-ID')} {item.unit_symbol} / hari
+
+                    {/* Kolom Komisi Kustom Per Item */}
+                    <td className="px-6 py-4">
+                      {isEditing ? (
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.5"
+                              value={editPct}
+                              onChange={(e) => setEditPct(e.target.value)}
+                              placeholder="Kosong = hapus"
+                              className="w-28 text-xs border border-purple-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">%</span>
+                          </div>
+                          <button
+                            onClick={() => handleSaveCustomCommission(item.id)}
+                            disabled={saving}
+                            className="p-1.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 border border-purple-200 cursor-pointer transition-all"
+                          >
+                            {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            className="p-1.5 rounded-lg bg-gray-50 text-gray-400 hover:bg-gray-100 border border-gray-200 cursor-pointer transition-all"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ) : hasCustom ? (
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                            <Percent size={10} />
+                            {parseFloat(item.custom_commission_pct).toFixed(1)}% Kustom
+                          </span>
+                          <button
+                            onClick={() => { setEditingId(item.id); setEditPct(item.custom_commission_pct); }}
+                            className="p-1 rounded-lg text-gray-400 hover:text-purple-600 hover:bg-purple-50 cursor-pointer transition-all"
+                          >
+                            <Edit2 size={12} />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => { setEditingId(item.id); setEditPct(''); }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-gray-400 border border-dashed border-gray-300 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50 cursor-pointer transition-all"
+                        >
+                          <Percent size={10} />
+                          Atur Kustom
+                        </button>
+                      )}
                     </td>
+
                     <td className="px-6 py-4">
                       {parseInt(item.is_active) === 1 ? (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
@@ -257,6 +309,7 @@ function AllProductsView({ onNavigateToSupplier }) {
                         </span>
                       )}
                     </td>
+
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => onNavigateToSupplier(item.supplier_name)}
