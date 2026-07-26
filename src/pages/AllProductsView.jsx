@@ -5,23 +5,20 @@ import {
   Search,
   CheckCircle2,
   AlertCircle,
-  ChevronDown,
-  ChevronUp,
-  Store,
-  ShieldCheck,
-  Ban,
+  UserCog,
+  ArrowUpDown,
   Filter
 } from 'lucide-react';
 
-function AllProductsView() {
+function AllProductsView({ onNavigateToSupplier }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [message, setMessage] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
   
-  // Track which suppliers are expanded in the accordion
-  const [expandedSuppliers, setExpandedSuppliers] = useState({});
+  // Filters & Sorting states
+  const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const [selectedStatus, setSelectedStatus] = useState('Semua');
+  const [selectedSort, setSelectedSort] = useState('name-asc');
 
   const [commissions, setCommissions] = useState({
     'Lauk Protein': 5,
@@ -75,92 +72,49 @@ function AllProductsView() {
     return 'Lain-lain';
   };
 
-  const handleToggleProduct = async (id, currentStatus) => {
-    setActionLoading(true);
-    setMessage('');
-    const newStatus = parseInt(currentStatus) === 1 ? 0 : 1;
-    try {
-      await apiClient.put('/admin_products.php', { id, is_active: newStatus });
-      setMessage('Status keaktifan produk berhasil diperbarui!');
-      fetchProducts();
-    } catch (err) {
-      setMessage('Gagal memperbarui status produk.');
-    } finally {
-      setActionLoading(false);
+  // Filter & Sort Logic
+  const processedProducts = useMemo(() => {
+    let list = [...products];
+
+    // 1. Keyword search (Name or Supplier)
+    if (search.trim() !== '') {
+      const query = search.toLowerCase();
+      list = list.filter(p => 
+        p.ingredient_name.toLowerCase().includes(query) ||
+        p.supplier_name.toLowerCase().includes(query)
+      );
     }
-  };
 
-  // Bulk Suspend/Activate all products of a supplier
-  const handleBulkStatusChange = async (supplierName, targetStatus) => {
-    const supplierProds = groupedSuppliers[supplierName]?.products || [];
-    const ids = supplierProds.map(p => p.id);
-    if (ids.length === 0) return;
-
-    setActionLoading(true);
-    setMessage('');
-    try {
-      await apiClient.put('/admin_products.php', { ids, is_active: targetStatus });
-      setMessage(`Seluruh katalog produk ${supplierName} berhasil ${targetStatus === 1 ? 'diaktifkan' : 'ditangguhkan'}!`);
-      fetchProducts();
-    } catch (err) {
-      setMessage('Gagal memproses perubahan massal.');
-    } finally {
-      setActionLoading(false);
+    // 2. Category Filter
+    if (selectedCategory !== 'Semua') {
+      list = list.filter(p => getCategory(p.ingredient_name) === selectedCategory);
     }
-  };
 
-  // Group products by supplier
-  const groupedSuppliers = useMemo(() => {
-    const groups = {};
-    products.forEach(p => {
-      if (!groups[p.supplier_name]) {
-        groups[p.supplier_name] = {
-          name: p.supplier_name,
-          products: [],
-          activeCount: 0,
-          suspendedCount: 0
-        };
+    // 3. Status Filter
+    if (selectedStatus !== 'Semua') {
+      const targetActive = selectedStatus === 'Aktif' ? 1 : 0;
+      list = list.filter(p => parseInt(p.is_active) === targetActive);
+    }
+
+    // 4. Sort
+    list.sort((a, b) => {
+      if (selectedSort === 'name-asc') {
+        return a.ingredient_name.localeCompare(b.ingredient_name);
       }
-      
-      const matchSearch = p.ingredient_name.toLowerCase().includes(search.toLowerCase());
-      
-      if (search === '' || matchSearch) {
-        groups[p.supplier_name].products.push(p);
-        if (parseInt(p.is_active) === 1) {
-          groups[p.supplier_name].activeCount += 1;
-        } else {
-          groups[p.supplier_name].suspendedCount += 1;
-        }
+      if (selectedSort === 'price-asc') {
+        return parseFloat(a.base_price) - parseFloat(b.base_price);
       }
+      if (selectedSort === 'price-desc') {
+        return parseFloat(b.base_price) - parseFloat(a.base_price);
+      }
+      if (selectedSort === 'capacity-desc') {
+        return parseFloat(b.daily_capacity) - parseFloat(a.daily_capacity);
+      }
+      return 0;
     });
 
-    // Remove suppliers with no matching products
-    Object.keys(groups).forEach(key => {
-      if (groups[key].products.length === 0) {
-        delete groups[key];
-      }
-    });
-
-    return groups;
-  }, [products, search]);
-
-  // Auto-expand suppliers if there is an active search query
-  useEffect(() => {
-    if (search !== '') {
-      const autoExpand = {};
-      Object.keys(groupedSuppliers).forEach(key => {
-        autoExpand[key] = true;
-      });
-      setExpandedSuppliers(autoExpand);
-    }
-  }, [search, groupedSuppliers]);
-
-  const toggleExpand = (name) => {
-    setExpandedSuppliers(prev => ({
-      ...prev,
-      [name]: !prev[name]
-    }));
-  };
+    return list;
+  }, [products, search, selectedCategory, selectedStatus, selectedSort]);
 
   const formatCurrency = (val) => {
     return new Intl.NumberFormat('id-ID', {
@@ -172,20 +126,14 @@ function AllProductsView() {
 
   return (
     <div className="space-y-6">
-      {message && (
-        <div className={`p-4 rounded-xl text-sm font-semibold border ${message.includes('Gagal') ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
-          {message}
-        </div>
-      )}
-
-      {/* Modern Filter Area */}
-      <div className="bg-gray-50 p-5 rounded-2xl border border-gray-150 flex flex-wrap gap-4 items-center justify-between shadow-sm">
-        <div className="flex-1 max-w-md">
-          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Cari Nama Bahan Makanan</label>
+      {/* Modern Filter Dashboard Controls */}
+      <div className="bg-gray-50 p-5 rounded-2xl border border-gray-150 flex flex-wrap gap-4 items-end shadow-sm">
+        <div className="flex-1 min-w-[200px]">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Cari Bahan / Supplier</label>
           <div className="relative">
             <input
               type="text"
-              placeholder="Cari cth: Telur, Beras, Daging..."
+              placeholder="Cari kata kunci..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="input-style w-full pl-9 h-[38px] mt-0 text-xs py-1"
@@ -194,159 +142,135 @@ function AllProductsView() {
           </div>
         </div>
 
+        <div className="w-[180px]">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Kategori</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="input-style w-full h-[38px] mt-0 text-xs py-1"
+          >
+            <option value="Semua">Semua Kategori</option>
+            <option value="Lauk Protein">Lauk Protein</option>
+            <option value="Makanan Pokok">Makanan Pokok</option>
+            <option value="Sayuran & Lauk Nabati">Sayuran & Lauk Nabati</option>
+            <option value="Buah & Minuman">Buah & Minuman</option>
+            <option value="Lain-lain">Lain-lain</option>
+          </select>
+        </div>
+
+        <div className="w-[150px]">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status Keaktifan</label>
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="input-style w-full h-[38px] mt-0 text-xs py-1"
+          >
+            <option value="Semua">Semua Status</option>
+            <option value="Aktif">Aktif / Publik</option>
+            <option value="Ditangguhkan">Ditangguhkan</option>
+          </select>
+        </div>
+
+        <div className="w-[180px]">
+          <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Urutan Data</label>
+          <select
+            value={selectedSort}
+            onChange={(e) => setSelectedSort(e.target.value)}
+            className="input-style w-full h-[38px] mt-0 text-xs py-1"
+          >
+            <option value="name-asc">Nama Bahan Baku (A-Z)</option>
+            <option value="price-asc">Harga Dasar Terendah</option>
+            <option value="price-desc">Harga Dasar Tertinggi</option>
+            <option value="capacity-desc">Kapasitas Harian Terbesar</option>
+          </select>
+        </div>
+
         <button
           onClick={fetchProducts}
-          className="text-xs font-bold text-green-600 hover:text-green-800 transition-colors bg-green-50 px-3 py-2 rounded-xl border border-green-200 cursor-pointer"
+          className="text-xs font-bold text-green-600 hover:text-green-800 transition-colors bg-green-50 px-3 py-2 rounded-xl border border-green-200 cursor-pointer h-[38px]"
         >
-          Segarkan Katalog
+          Refresh
         </button>
       </div>
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="animate-spin text-green-600" size={32} /></div>
-      ) : Object.keys(groupedSuppliers).length === 0 ? (
+      ) : processedProducts.length === 0 ? (
         <div className="bg-white border rounded-2xl p-12 text-center text-gray-400 italic">
-          Tidak ada produk yang cocok dengan pencarian Anda.
+          Tidak ada produk yang cocok dengan kriteria filter.
         </div>
       ) : (
-        <div className="space-y-4">
-          {Object.values(groupedSuppliers).map((sup) => {
-            const isExpanded = !!expandedSuppliers[sup.name];
+        <div className="overflow-x-auto bg-white border border-gray-150 rounded-2xl">
+          <table className="w-full text-sm text-left text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+              <tr>
+                <th className="px-6 py-4">Bahan Baku</th>
+                <th className="px-6 py-4">Kategori</th>
+                <th className="px-6 py-4">Supplier / Pemasok</th>
+                <th className="px-6 py-4">Harga Dasar</th>
+                <th className="px-6 py-4">Komisi Platform</th>
+                <th className="px-6 py-4">Kapasitas Harian</th>
+                <th className="px-6 py-4">Status Layanan</th>
+                <th className="px-6 py-4 text-center">Kelola</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {processedProducts.map((item) => {
+                const cat = getCategory(item.ingredient_name);
+                const rate = commissions[cat] || 0;
+                const commissionVal = (parseFloat(item.base_price) * rate) / 100;
+                const netVal = parseFloat(item.base_price) - commissionVal;
 
-            return (
-              <div key={sup.name} className="bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                {/* Supplier Header Accordion */}
-                <div
-                  onClick={() => toggleExpand(sup.name)}
-                  className="bg-gray-50/50 p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-100"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
-                      <Store size={20} />
-                    </div>
-                    <div>
-                      <h4 className="font-extrabold text-gray-800 text-sm">{sup.name}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-bold">
-                          {sup.activeCount} Aktif
+                return (
+                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 font-bold text-gray-800">{item.ingredient_name}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider ${
+                        cat === 'Lauk Protein' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
+                        cat === 'Makanan Pokok' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
+                        cat === 'Sayuran & Lauk Nabati' ? 'bg-green-50 text-green-700 border border-green-100' :
+                        cat === 'Buah & Minuman' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
+                        'bg-gray-50 text-gray-700 border border-gray-100'
+                      }`}>
+                        {cat}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-700 font-semibold">{item.supplier_name}</td>
+                    <td className="px-6 py-4 text-gray-900 font-bold">
+                      {formatCurrency(item.base_price)} / {item.unit_symbol}
+                    </td>
+                    <td className="px-6 py-4 text-xs font-semibold text-emerald-700">
+                      <span>{formatCurrency(commissionVal)}</span>
+                      <span className="text-[10px] text-gray-400 font-bold block">({rate}% Fee | Net: {formatCurrency(netVal)})</span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 font-medium">
+                      {parseFloat(item.daily_capacity).toLocaleString('id-ID')} {item.unit_symbol} / hari
+                    </td>
+                    <td className="px-6 py-4">
+                      {parseInt(item.is_active) === 1 ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
+                          <CheckCircle2 size={12} /> Aktif
                         </span>
-                        {sup.suspendedCount > 0 && (
-                          <span className="text-[10px] bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-bold">
-                            {sup.suspendedCount} Ditangguhkan
-                          </span>
-                        )}
-                        <span className="text-[10px] text-gray-400 font-semibold">• Total: {sup.products.length} Bahan</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 self-stretch md:self-auto justify-end">
-                    {/* Bulk Action Buttons */}
-                    <div onClick={(e) => e.stopPropagation()} className="flex items-center gap-2 mr-2">
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                          <AlertCircle size={12} /> Ditangguhkan
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-center">
                       <button
-                        onClick={() => handleBulkStatusChange(sup.name, 1)}
-                        disabled={actionLoading}
-                        className="px-2.5 py-1.5 bg-green-50 text-green-700 hover:bg-green-150 border border-green-200 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                        onClick={() => onNavigateToSupplier(item.supplier_name)}
+                        title="Kelola Supplier"
+                        className="inline-flex items-center justify-center p-2 rounded-xl bg-green-50 text-green-600 hover:bg-green-100 border border-green-100 transition-all cursor-pointer shadow-sm hover:-translate-y-0.5"
                       >
-                        <CheckCircle2 size={12} />
-                        <span>Aktifkan Semua</span>
+                        <UserCog size={16} />
                       </button>
-                      <button
-                        onClick={() => handleBulkStatusChange(sup.name, 0)}
-                        disabled={actionLoading}
-                        className="px-2.5 py-1.5 bg-red-50 text-red-700 hover:bg-red-150 border border-red-200 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer"
-                      >
-                        <Ban size={12} />
-                        <span>Tangguhkan Semua</span>
-                      </button>
-                    </div>
-
-                    <div className="text-gray-400">
-                      {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Supplier Product List Table */}
-                {isExpanded && (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs text-left text-gray-500">
-                      <thead className="text-[10px] text-gray-400 font-bold uppercase tracking-wider bg-gray-50/20 border-b">
-                        <tr>
-                          <th className="px-6 py-3.5">Bahan Baku</th>
-                          <th className="px-6 py-3.5">Kategori</th>
-                          <th className="px-6 py-3.5">Harga Dasar</th>
-                          <th className="px-6 py-3.5">Komisi Platform</th>
-                          <th className="px-6 py-3.5">Kapasitas Harian</th>
-                          <th className="px-6 py-3.5">Status Layanan</th>
-                          <th className="px-6 py-3.5 text-right">Moderasi</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100">
-                        {sup.products.map((item) => {
-                          const cat = getCategory(item.ingredient_name);
-                          const rate = commissions[cat] || 0;
-                          const commissionVal = (parseFloat(item.base_price) * rate) / 100;
-                          const netVal = parseFloat(item.base_price) - commissionVal;
-
-                          return (
-                            <tr key={item.id} className="hover:bg-gray-55/30 transition-colors">
-                              <td className="px-6 py-3.5 font-bold text-gray-700">{item.ingredient_name}</td>
-                              <td className="px-6 py-3.5">
-                                <span className={`px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wider ${
-                                  cat === 'Lauk Protein' ? 'bg-orange-50 text-orange-700 border border-orange-100' :
-                                  cat === 'Makanan Pokok' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                                  cat === 'Sayuran & Lauk Nabati' ? 'bg-green-50 text-green-700 border border-green-100' :
-                                  cat === 'Buah & Minuman' ? 'bg-purple-50 text-purple-700 border border-purple-100' :
-                                  'bg-gray-50 text-gray-700 border border-gray-100'
-                                }`}>
-                                  {cat}
-                                </span>
-                              </td>
-                              <td className="px-6 py-3.5 font-bold text-gray-900">
-                                {formatCurrency(item.base_price)} / {item.unit_symbol}
-                              </td>
-                              <td className="px-6 py-3.5 font-semibold text-emerald-700">
-                                <span>{formatCurrency(commissionVal)}</span>
-                                <span className="text-[9px] text-gray-400 block font-normal">({rate}% Fee | Net: {formatCurrency(netVal)})</span>
-                              </td>
-                              <td className="px-6 py-3.5 text-gray-500 font-medium">
-                                {parseFloat(item.daily_capacity).toLocaleString('id-ID')} {item.unit_symbol} / Hari
-                              </td>
-                              <td className="px-6 py-3.5">
-                                {parseInt(item.is_active) === 1 ? (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-700 border border-green-200">
-                                    <CheckCircle2 size={10} /> Aktif / Publik
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">
-                                    <AlertCircle size={10} /> Ditangguhkan
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-6 py-3.5 text-right">
-                                <button
-                                  onClick={() => handleToggleProduct(item.id, item.is_active)}
-                                  disabled={actionLoading}
-                                  className={`px-3 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
-                                    parseInt(item.is_active) === 1
-                                      ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
-                                      : 'bg-green-600 text-white hover:bg-green-700'
-                                  }`}
-                                >
-                                  {parseInt(item.is_active) === 1 ? 'Tangguhkan' : 'Aktifkan'}
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

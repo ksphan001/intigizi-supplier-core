@@ -35,6 +35,7 @@ function Dashboard() {
 
   const [activeTab, setActiveTab] = useState(isAdmin ? 'admin-dashboard' : 'supplier-dashboard');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [selectedAdminSupplier, setSelectedAdminSupplier] = useState(null);
 
   const getHeaderTitle = () => {
     switch (activeTab) {
@@ -65,7 +66,7 @@ function Dashboard() {
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-white border-r border-gray-200 p-6 flex-shrink-0">
-        <h1 className="text-xl font-bold text-green-750 mb-8 flex items-center gap-2">
+        <h1 className="text-xl font-bold text-green-755 mb-8 flex items-center gap-2">
           <span className="text-green-700">Supplier Portal</span>
           <span className="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded-full uppercase">B2B</span>
         </h1>
@@ -168,7 +169,7 @@ function Dashboard() {
                 className={`w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'profile'
                     ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:bg-gray-55 hover:text-green-700'
                 }`}
               >
                 <User size={18} className="mr-3 flex-shrink-0" />
@@ -233,8 +234,20 @@ function Dashboard() {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           {activeTab === 'admin-dashboard' && <AdminSummaryView />}
           {activeTab === 'supplier-dashboard' && <SupplierDashboardView />}
-          {activeTab === 'verification' && <SupplierVerificationView />}
-          {activeTab === 'admin-products' && <AllProductsView />}
+          {activeTab === 'verification' && (
+            <SupplierVerificationView
+              preselectedSupplierName={selectedAdminSupplier}
+              onClearPreselected={() => setSelectedAdminSupplier(null)}
+            />
+          )}
+          {activeTab === 'admin-products' && (
+            <AllProductsView
+              onNavigateToSupplier={(supplierName) => {
+                setSelectedAdminSupplier(supplierName);
+                setActiveTab('verification');
+              }}
+            />
+          )}
           {activeTab === 'connections' && <ConnectedKitchensView />}
           {activeTab === 'commission-settings' && <CommissionSettingsView />}
           {activeTab === 'katalog' && <CatalogView />}

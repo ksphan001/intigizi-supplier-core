@@ -30,7 +30,7 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-function SupplierVerificationView() {
+function SupplierVerificationView({ preselectedSupplierName, onClearPreselected }) {
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -44,6 +44,17 @@ function SupplierVerificationView() {
 
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
+
+  // Auto-expand pre-selected supplier from catalog navigation
+  useEffect(() => {
+    if (preselectedSupplierName && suppliers.length > 0) {
+      const match = suppliers.find(s => s.supplier_name.toLowerCase() === preselectedSupplierName.toLowerCase());
+      if (match) {
+        setActiveSupplier(match);
+      }
+      onClearPreselected();
+    }
+  }, [preselectedSupplierName, suppliers, onClearPreselected]);
 
   const fetchSuppliers = async () => {
     setLoading(true);
