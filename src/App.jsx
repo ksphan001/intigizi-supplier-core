@@ -78,17 +78,17 @@ function DashboardLayout() {
 
   const getHeaderTitle = () => {
     const path = location.pathname;
-    if (path.includes('/dashboard/admin')) return 'Dashboard Consolidation Super Admin';
-    if (path.includes('/dashboard/supplier-dashboard')) return 'Dasbor Finansial & Analitik Toko';
-    if (path.includes('/dashboard/verification')) return 'Manajemen Daftar Supplier';
-    if (path.includes('/dashboard/admin-products')) return 'Katalog Produk Global';
-    if (path.includes('/dashboard/connections')) return 'Koneksi Dapur Terhubung';
-    if (path.includes('/dashboard/commission-settings')) return 'Pengaturan Komisi Platform';
-    if (path.includes('/dashboard/supplier-map')) return 'Peta Sebaran & Jangkauan Logistik Supplier';
-    if (path.includes('/dashboard/admin-users')) return 'Manajemen Akun User Supplier';
-    if (path.includes('/dashboard/katalog')) return 'Manajemen Katalog Bahan Baku';
-    if (path.includes('/dashboard/orders')) return 'Pesanan Masuk (B2B)';
-    if (path.includes('/dashboard/profile')) return 'Profil Supplier';
+    if (path === '/dashboard/admin') return 'Dashboard Consolidation Super Admin';
+    if (path === '/dashboard/supplier-dashboard') return 'Dasbor Finansial & Analitik Toko';
+    if (path === '/dashboard/verification') return 'Manajemen Daftar Supplier';
+    if (path === '/dashboard/admin-products') return 'Katalog Produk Global';
+    if (path === '/dashboard/connections') return 'Koneksi Dapur Terhubung';
+    if (path === '/dashboard/commission-settings') return 'Pengaturan Komisi Platform';
+    if (path === '/dashboard/supplier-map') return 'Peta Sebaran & Jangkauan Logistik Supplier';
+    if (path === '/dashboard/admin-users') return 'Manajemen Akun User Supplier';
+    if (path === '/dashboard/katalog') return 'Manajemen Katalog Bahan Baku';
+    if (path === '/dashboard/orders') return 'Pesanan Masuk (B2B)';
+    if (path === '/dashboard/profile') return 'Profil Supplier';
     return 'Portal B2B Supplier';
   };
 
