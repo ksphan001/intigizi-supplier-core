@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import apiClient from '../services/api';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Navigation, Save, Loader2, FileText, CheckCircle, Upload, AlertCircle, Building2, User, Globe, DollarSign } from 'lucide-react';
+import { MapPin, Navigation, Save, Loader2, FileText, CheckCircle, Upload, AlertCircle, Building2, User, Globe, DollarSign, Star, Calendar } from 'lucide-react';
 
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
@@ -66,6 +66,27 @@ function ProfileView() {
     sla_score: 100.00,
     avg_process_time_hours: 0.00
   });
+
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  const fetchReviews = async () => {
+    setReviewsLoading(true);
+    try {
+      const response = await apiClient.get('/supplier_reviews_get.php');
+      setReviews(Array.isArray(response.data) ? response.data : []);
+    } catch (err) {
+      console.error("Gagal memuat ulasan", err);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'ulasan') {
+      fetchReviews();
+    }
+  }, [activeTab]);
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -309,6 +330,16 @@ function ProfileView() {
         >
           <DollarSign size={14} />
           <span>Rekening Bank</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('ulasan')}
+          className={`px-4 py-2.5 text-xs font-bold transition-all border-b-2 cursor-pointer flex items-center gap-1.5 ${
+            activeTab === 'ulasan' ? 'border-green-600 text-green-700 font-extrabold' : 'border-transparent text-gray-400 hover:text-gray-600'
+          }`}
+        >
+          <Star size={14} />
+          <span>Ulasan Dapur ({profileStats.review_count})</span>
         </button>
       </div>
 
@@ -675,23 +706,73 @@ function ProfileView() {
           </div>
         )}
 
-        {/* Footer Actions */}
-        <div className="flex justify-end pt-4 border-t">
-          <button
-            type="submit"
-            disabled={saving}
-            className="btn-primary flex items-center gap-2 cursor-pointer"
-          >
-            {saving ? (
-              <Loader2 className="animate-spin" size={16} />
+        {/* TAB 5: ULASAN DAPUR */}
+        {activeTab === 'ulasan' && (
+          <div className="bg-white p-6 border border-gray-200 rounded-2xl shadow-sm space-y-6">
+            <div>
+              <h4 className="text-sm font-extrabold text-gray-800">Ulasan & Feedback Dapur Gizi Mitra</h4>
+              <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Seluruh ulasan dan saran tertulis yang diberikan dapur setelah pengiriman selesai</p>
+            </div>
+
+            {reviewsLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="animate-spin text-green-600" size={24} />
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-12 text-gray-400 italic font-semibold border border-dashed rounded-xl bg-gray-50/50">
+                Belum ada ulasan tertulis dari unit dapur mitra.
+              </div>
             ) : (
-              <>
-                <Save size={16} />
-                <span>Simpan Perubahan</span>
-              </>
+              <div className="space-y-4">
+                {reviews.map((rev) => (
+                  <div key={rev.id} className="p-4 bg-gray-50/50 border border-gray-150 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-extrabold text-xs text-gray-800">{rev.kitchen_name}</span>
+                        <div className="flex items-center text-amber-500 gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star 
+                              key={i} 
+                              size={12} 
+                              className={i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'} 
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-gray-400 font-bold flex items-center gap-1.5">
+                        <Calendar size={12} />
+                        {new Date(rev.created_at).toLocaleDateString('id-ID')}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 leading-relaxed font-semibold italic bg-white p-3 rounded-lg border border-gray-100/80">
+                      "{rev.comment || 'Hanya memberikan rating bintang.'}"
+                    </p>
+                  </div>
+                ))}
+              </div>
             )}
-          </button>
-        </div>
+          </div>
+        )}
+
+        {/* Footer Actions */}
+        {activeTab !== 'ulasan' && (
+          <div className="flex justify-end pt-4 border-t">
+            <button
+              type="submit"
+              disabled={saving}
+              className="btn-primary flex items-center gap-2 cursor-pointer"
+            >
+              {saving ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                <>
+                  <Save size={16} />
+                  <span>Simpan Perubahan</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );
