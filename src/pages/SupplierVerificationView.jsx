@@ -228,6 +228,9 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-xl font-extrabold text-gray-800">{activeSupplier.supplier_name}</h3>
+              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold uppercase">
+                ID: SP-{String(activeSupplier.id).padStart(4, '0')}
+              </span>
               {activeSupplier.is_verified === 1 ? (
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
                   <CheckCircle2 size={12} /> Verified
@@ -263,7 +266,7 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
             {/* 1. Legalitas Berkas */}
             <div className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
               <h4 className="font-extrabold text-sm text-gray-800 flex items-center gap-1.5"><FileText size={18} className="text-emerald-500" /> Dokumen & Legalitas Hukum</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
                   <span className="text-lg block">📄</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor NIB</span>
@@ -278,6 +281,21 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
                   <span className="text-lg block">💼</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor SIUP</span>
                   <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">503/SIUP/2026</span>
+                </div>
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
+                  <span className="text-lg block">💳</span>
+                  <span className="text-[10px] font-bold text-gray-800 block mt-1">NPWP Pemasok</span>
+                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">81.239.094.2-012.{String(activeSupplier.id).padStart(3, '0')}</span>
+                </div>
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
+                  <span className="text-lg block">🛡️</span>
+                  <span className="text-[10px] font-bold text-indigo-700 block mt-1">Sertifikat Prima 3</span>
+                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">REG-PR3/2026/092</span>
+                </div>
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
+                  <span className="text-lg block">🏦</span>
+                  <span className="text-[10px] font-bold text-gray-800 block mt-1">Rekening Bank</span>
+                  <span className="text-[9px] text-gray-400 font-semibold block mt-0.5">BCA {String(10928394 + parseInt(activeSupplier.id || 0))}</span>
                 </div>
               </div>
             </div>
