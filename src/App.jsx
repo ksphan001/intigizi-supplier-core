@@ -80,8 +80,8 @@ function DashboardLayout() {
 
   const getHeaderTitle = () => {
     const path = location.pathname;
-    if (path === '/dashboard/admin') return 'Dashboard Consolidation Super Admin';
-    if (path === '/dashboard/supplier-dashboard') return 'Dasbor Finansial & Analitik Toko';
+    if (path === '/dashboard/admin') return 'Dashboard';
+    if (path === '/dashboard/supplier-dashboard') return 'Dashboard';
     if (path === '/dashboard/verification') return 'Manajemen Daftar Supplier';
     if (path === '/dashboard/admin-products') return 'Katalog Produk Global';
     if (path === '/dashboard/connections') return 'Koneksi Dapur Terhubung';
@@ -92,81 +92,154 @@ function DashboardLayout() {
     if (path === '/dashboard/katalog') return 'Manajemen Katalog Bahan Baku';
     if (path === '/dashboard/orders') return 'Pesanan Masuk (B2B)';
     if (path === '/dashboard/profile') return 'Profil Supplier';
-    return 'Portal B2B Supplier';
+    return 'Portal B2B';
   };
 
   const navLinkClass = ({ isActive }) =>
-    `w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+    `w-full flex items-center justify-start text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
       isActive
-        ? 'bg-green-50 text-green-700 border border-green-200/50 shadow-sm'
-        : 'text-gray-650 hover:bg-gray-55 hover:text-green-700'
+        ? 'bg-gray-50 text-gray-800 border border-gray-150 shadow-sm'
+        : 'text-gray-600 hover:bg-gray-50/50 hover:text-gray-800'
     }`;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white border-r border-gray-200 p-6 flex-shrink-0">
-        <h1 className="text-xl font-bold text-green-755 mb-8 flex items-center gap-2">
-          <span className="text-green-700">Supplier Portal</span>
-          <span className="text-[10px] bg-green-100 text-green-800 px-2 py-0.5 rounded-full uppercase">B2B</span>
-        </h1>
-        <nav className="space-y-1">
-          {isAdmin ? (
-            <>
-              <NavLink to="/dashboard/admin" className={navLinkClass}>
-                <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
-                <span>Dashboard Admin</span>
-              </NavLink>
-              <NavLink to="/dashboard/verification" className={navLinkClass}>
-                <ShieldCheck size={18} className="mr-3 flex-shrink-0" />
-                <span>Daftar Supplier</span>
-              </NavLink>
-              <NavLink to="/dashboard/admin-products" className={navLinkClass}>
-                <Layers size={18} className="mr-3 flex-shrink-0" />
-                <span>Katalog Produk Global</span>
-              </NavLink>
-              <NavLink to="/dashboard/connections" className={navLinkClass}>
-                <Link2 size={18} className="mr-3 flex-shrink-0" />
-                <span>Koneksi Dapur Terhubung</span>
-              </NavLink>
-              <NavLink to="/dashboard/commission-settings" className={navLinkClass}>
-                <Percent size={18} className="mr-3 flex-shrink-0" />
-                <span>Komisi Platform</span>
-              </NavLink>
-              <NavLink to="/dashboard/supplier-map" className={navLinkClass}>
-                <MapPin size={18} className="mr-3 flex-shrink-0" />
-                <span>Peta Sebaran Supplier</span>
-              </NavLink>
-              <NavLink to="/dashboard/admin-users" className={navLinkClass}>
-                <Users size={18} className="mr-3 flex-shrink-0" />
-                <span>User Supplier</span>
-              </NavLink>
-              <NavLink to="/dashboard/finance" className={navLinkClass}>
-                <DollarSign size={18} className="mr-3 flex-shrink-0" />
-                <span>Laporan Keuangan</span>
-              </NavLink>
-            </>
-          ) : (
-            <>
-              <NavLink to="/dashboard/supplier-dashboard" className={navLinkClass}>
-                <LayoutDashboard size={18} className="mr-3 flex-shrink-0" />
-                <span>Dasbor Toko</span>
-              </NavLink>
-              <NavLink to="/dashboard/katalog" className={navLinkClass}>
-                <Store size={18} className="mr-3 flex-shrink-0" />
-                <span>Katalog Saya</span>
-              </NavLink>
-              <NavLink to="/dashboard/orders" className={navLinkClass}>
-                <ClipboardList size={18} className="mr-3 flex-shrink-0" />
-                <span>Pesanan Masuk</span>
-              </NavLink>
-              <NavLink to="/dashboard/profile" className={navLinkClass}>
-                <User size={18} className="mr-3 flex-shrink-0" />
-                <span>Profil Supplier</span>
-              </NavLink>
-            </>
-          )}
-        </nav>
+      <aside className="w-full md:w-64 bg-white border-r border-gray-200 p-6 flex-shrink-0 flex flex-col justify-between">
+        <div>
+          {/* Logo Brand matching Aplikasi Dapur */}
+          <div className="flex items-center gap-2 mb-8 pl-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 shadow-sm border border-green-100 flex-shrink-0 relative">
+              <span className="text-green-600 font-black text-sm absolute -translate-x-1 -translate-y-1">I</span>
+              <span className="text-orange-500 font-black text-sm absolute translate-x-1.5 translate-y-1">G</span>
+              <div className="absolute top-1 left-4 w-1 h-1 rounded-full bg-green-500" />
+            </div>
+            <span className="text-lg font-black tracking-tight text-gray-700">
+              <span>Inti</span>
+              <span className="text-green-600">Gizi</span>
+            </span>
+          </div>
+
+          <nav className="space-y-4">
+            {isAdmin ? (
+              <>
+                <div>
+                  <NavLink to="/dashboard/admin" className={navLinkClass}>
+                    <LayoutDashboard size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                    <span>Dashboard</span>
+                  </NavLink>
+                </div>
+
+                <div>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-4 py-1.5 flex items-center justify-between">
+                    <span>Operasional</span>
+                    <ChevronDown size={12} className="text-gray-300" />
+                  </div>
+                  <div className="space-y-0.5 mt-1">
+                    <NavLink to="/dashboard/verification" className={navLinkClass}>
+                      <ShieldCheck size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Daftar Supplier</span>
+                    </NavLink>
+                    <NavLink to="/dashboard/admin-products" className={navLinkClass}>
+                      <Layers size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Katalog Produk Global</span>
+                    </NavLink>
+                    <NavLink to="/dashboard/connections" className={navLinkClass}>
+                      <Link2 size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Koneksi Dapur Terhubung</span>
+                    </NavLink>
+                    <NavLink to="/dashboard/supplier-map" className={navLinkClass}>
+                      <MapPin size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Peta Sebaran Supplier</span>
+                    </NavLink>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-4 py-1.5 flex items-center justify-between">
+                    <span>Keuangan</span>
+                    <ChevronDown size={12} className="text-gray-300" />
+                  </div>
+                  <div className="space-y-0.5 mt-1">
+                    <NavLink to="/dashboard/commission-settings" className={navLinkClass}>
+                      <Percent size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Komisi Platform</span>
+                    </NavLink>
+                    <NavLink to="/dashboard/finance" className={navLinkClass}>
+                      <DollarSign size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Laporan Keuangan</span>
+                    </NavLink>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-4 py-1.5 flex items-center justify-between">
+                    <span>Administrasi</span>
+                    <ChevronDown size={12} className="text-gray-300" />
+                  </div>
+                  <div className="space-y-0.5 mt-1">
+                    <NavLink to="/dashboard/admin-users" className={navLinkClass}>
+                      <Users size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>User Supplier</span>
+                    </NavLink>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <NavLink to="/dashboard/supplier-dashboard" className={navLinkClass}>
+                    <LayoutDashboard size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                    <span>Dashboard</span>
+                  </NavLink>
+                </div>
+
+                <div>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-4 py-1.5 flex items-center justify-between">
+                    <span>Operasional</span>
+                    <ChevronDown size={12} className="text-gray-300" />
+                  </div>
+                  <div className="space-y-0.5 mt-1">
+                    <NavLink to="/dashboard/katalog" className={navLinkClass}>
+                      <Store size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Katalog Saya</span>
+                    </NavLink>
+                    <NavLink to="/dashboard/orders" className={navLinkClass}>
+                      <ClipboardList size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Pesanan Masuk</span>
+                    </NavLink>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-4 py-1.5 flex items-center justify-between">
+                    <span>Administrasi</span>
+                    <ChevronDown size={12} className="text-gray-300" />
+                  </div>
+                  <div className="space-y-0.5 mt-1">
+                    <NavLink to="/dashboard/profile" className={navLinkClass}>
+                      <User size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Profil Supplier</span>
+                    </NavLink>
+                  </div>
+                </div>
+              </>
+            )}
+          </nav>
+        </div>
+
+        {/* Bottom Profile Quick View */}
+        <div className="pt-6 border-t border-gray-150">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-green-50 border border-green-200 text-green-700 flex items-center justify-center font-black text-sm">
+              {user.supplier_name ? user.supplier_name.charAt(0).toUpperCase() : 'A'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-black text-gray-700 truncate">{user.supplier_name || 'Administrator'}</p>
+              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider truncate mt-0.5">{user.username || 'admin'}</p>
+            </div>
+          </div>
+        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -179,7 +252,7 @@ function DashboardLayout() {
               onClick={() => setShowProfileMenu(!showProfileMenu)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200"
             >
-              <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-black text-sm">
+              <div className="w-8 h-8 rounded-full bg-green-55 text-green-700 flex items-center justify-center font-black text-sm">
                 {user.supplier_name ? user.supplier_name.charAt(0).toUpperCase() : 'A'}
               </div>
               <ChevronDown size={14} className="text-gray-550" />
