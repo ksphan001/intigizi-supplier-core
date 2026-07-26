@@ -14,7 +14,8 @@ import {
   MapPin,
   HelpCircle,
   Menu,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 
 function LandingPage() {
@@ -29,6 +30,26 @@ function LandingPage() {
     kitchenPartners: 18,
     economicTurnover: 750000000
   });
+
+  const [suppliers, setSuppliers] = useState([]);
+  const [suppliersLoading, setSuppliersLoading] = useState(false);
+
+  const fetchSuppliers = async () => {
+    setSuppliersLoading(true);
+    try {
+      const res = await fetch('http://intigizi-supplier-api.test/app/marketplace_suppliers.php');
+      const data = await res.json();
+      setSuppliers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Gagal memuat daftar supplier", err);
+    } finally {
+      setSuppliersLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSuppliers();
+  }, []);
 
   const toggleFaq = (index) => {
     setActiveFaq(activeFaq === index ? null : index);
@@ -269,6 +290,77 @@ function LandingPage() {
               <p className="text-[10px] text-white/70 font-bold uppercase tracking-wider mt-1">Perputaran Kas UMKM</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* REGISTERED SUPPLIERS SECTION */}
+      <section className="py-20 bg-gray-50 border-t border-b border-gray-150">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl font-black text-gray-800">Mitra Supplier Terdaftar</h2>
+            <p className="text-sm text-gray-400 font-bold max-w-xl mx-auto uppercase tracking-widest">
+              UMKM Pangan & Kelompok Tani Lokal yang siap melayani kebutuhan dapur gizi
+            </p>
+          </div>
+
+          {suppliersLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="animate-spin text-green-600" size={32} />
+            </div>
+          ) : suppliers.length === 0 ? (
+            <p className="text-center py-12 text-gray-450 italic font-semibold">Belum ada supplier yang mendaftar secara publik.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {suppliers.map((sup) => (
+                <div key={sup.id} className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="text-base font-extrabold text-gray-800 truncate">{sup.supplier_name}</h4>
+                      {!!sup.is_verified && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-50 text-green-700 border border-green-200 shrink-0">
+                          Verified
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
+                      <MapPin size={14} className="text-gray-400 shrink-0" />
+                      <span className="truncate">{sup.address || '-'}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
+                      <Truck size={14} className="text-gray-400 shrink-0" />
+                      <span>Radius Pengiriman: {sup.coverage_radius_km || 15} km</span>
+                    </div>
+
+                    {/* Stats badges */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-50 border border-gray-200 text-gray-650">
+                        ⭐️ {parseFloat(sup.average_rating || 0).toFixed(2)} ({sup.review_count} Ulasan)
+                      </span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 border border-emerald-150 text-emerald-700">
+                        SLA: {parseFloat(sup.sla_score || 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* List of ingredients */}
+                  {sup.matching_ingredients && sup.matching_ingredients.length > 0 && (
+                    <div className="border-t border-dashed border-gray-150 pt-3 flex flex-wrap gap-1">
+                      {sup.matching_ingredients.slice(0, 3).map((ing, idx) => (
+                        <span key={idx} className="inline-flex items-center px-1.5 py-0.5 rounded bg-gray-50 text-gray-600 text-[10px] font-bold border border-gray-150">
+                          {ing.ingredient_name}
+                        </span>
+                      ))}
+                      {sup.matching_ingredients.length > 3 && (
+                        <span className="text-[10px] text-gray-400 font-bold self-center">+{sup.matching_ingredients.length - 3} lainnya</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
