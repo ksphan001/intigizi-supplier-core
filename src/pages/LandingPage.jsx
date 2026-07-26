@@ -323,10 +323,7 @@ function LandingPage() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
-                      <MapPin size={14} className="text-gray-400 shrink-0" />
-                      <span className="truncate">{sup.address || '-'}</span>
-                    </div>
+
 
                     <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
                       <Truck size={14} className="text-gray-400 shrink-0" />
