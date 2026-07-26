@@ -18,6 +18,7 @@ import CommissionSettingsView from './pages/CommissionSettingsView';
 import SupplierMapView from './pages/SupplierMapView';
 import AdminUsersView from './pages/AdminUsersView';
 import AdminFinanceView from './pages/AdminFinanceView';
+import SupplierFinanceView from './pages/SupplierFinanceView';
 
 import {
   LayoutDashboard,
@@ -91,6 +92,7 @@ function DashboardLayout() {
     if (path === '/dashboard/finance') return 'Laporan Keuangan & Platform Fee B2B';
     if (path === '/dashboard/katalog') return 'Manajemen Katalog Bahan Baku';
     if (path === '/dashboard/orders') return 'Pesanan Masuk (B2B)';
+    if (path === '/dashboard/supplier-finance') return 'Laporan Keuangan & Penjualan';
     if (path === '/dashboard/profile') return 'Profil Supplier';
     return 'Portal B2B';
   };
@@ -221,6 +223,10 @@ function DashboardLayout() {
                       <User size={18} className="mr-3 flex-shrink-0 text-gray-400" />
                       <span>Profil Supplier</span>
                     </NavLink>
+                    <NavLink to="/dashboard/supplier-finance" className={navLinkClass}>
+                      <DollarSign size={18} className="mr-3 flex-shrink-0 text-gray-400" />
+                      <span>Laporan Keuangan</span>
+                    </NavLink>
                   </div>
                 </div>
               </>
@@ -340,6 +346,7 @@ function App() {
           <Route path="supplier-dashboard" element={<SupplierDashboardView />} />
           <Route path="katalog" element={<CatalogView />} />
           <Route path="orders" element={<OrdersView />} />
+          <Route path="supplier-finance" element={<SupplierFinanceView />} />
           <Route path="profile" element={<ProfileView />} />
         </Route>
 
