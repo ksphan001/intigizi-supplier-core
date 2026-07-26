@@ -17,6 +17,7 @@ import SupplierDashboardView from './pages/SupplierDashboardView';
 import CommissionSettingsView from './pages/CommissionSettingsView';
 import SupplierMapView from './pages/SupplierMapView';
 import AdminUsersView from './pages/AdminUsersView';
+import AdminFinanceView from './pages/AdminFinanceView';
 
 import {
   LayoutDashboard,
@@ -30,7 +31,8 @@ import {
   ChevronDown,
   Percent,
   MapPin,
-  Users
+  Users,
+  DollarSign
 } from 'lucide-react';
 
 function DashboardIndex() {
@@ -86,6 +88,7 @@ function DashboardLayout() {
     if (path === '/dashboard/commission-settings') return 'Pengaturan Komisi Platform';
     if (path === '/dashboard/supplier-map') return 'Peta Sebaran & Jangkauan Logistik Supplier';
     if (path === '/dashboard/admin-users') return 'Manajemen Akun User Supplier';
+    if (path === '/dashboard/finance') return 'Laporan Keuangan & Platform Fee B2B';
     if (path === '/dashboard/katalog') return 'Manajemen Katalog Bahan Baku';
     if (path === '/dashboard/orders') return 'Pesanan Masuk (B2B)';
     if (path === '/dashboard/profile') return 'Profil Supplier';
@@ -138,6 +141,10 @@ function DashboardLayout() {
                 <Users size={18} className="mr-3 flex-shrink-0" />
                 <span>User Supplier</span>
               </NavLink>
+              <NavLink to="/dashboard/finance" className={navLinkClass}>
+                <DollarSign size={18} className="mr-3 flex-shrink-0" />
+                <span>Laporan Keuangan</span>
+              </NavLink>
             </>
           ) : (
             <>
@@ -189,7 +196,7 @@ function DashboardLayout() {
                   <NavLink
                     to="/dashboard/profile"
                     onClick={() => setShowProfileMenu(false)}
-                    className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+                    className="w-full text-left px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-55 flex items-center gap-2 cursor-pointer"
                   >
                     <User size={14} className="text-gray-400" />
                     <span>Profil Supplier</span>
@@ -254,6 +261,7 @@ function App() {
           <Route path="commission-settings" element={<CommissionSettingsView />} />
           <Route path="supplier-map" element={<SupplierMapView />} />
           <Route path="admin-users" element={<AdminUsersView />} />
+          <Route path="finance" element={<AdminFinanceView />} />
           
           {/* Supplier Sub-routes */}
           <Route path="supplier-dashboard" element={<SupplierDashboardView />} />
