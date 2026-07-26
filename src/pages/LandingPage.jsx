@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Store, 
@@ -15,13 +15,28 @@ import {
   HelpCircle,
   Menu,
   X,
-  Loader2
+  Loader2,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 function LandingPage() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
+  const sliderRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: -360, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (sliderRef.current) {
+      sliderRef.current.scrollBy({ left: 360, behavior: 'smooth' });
+    }
+  };
   
   // Local stats state (could fetch from API eventually)
   const [stats, setStats] = useState({
@@ -295,12 +310,34 @@ function LandingPage() {
 
       {/* REGISTERED SUPPLIERS SECTION */}
       <section className="py-20 bg-gray-50 border-t border-b border-gray-150">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-3xl font-black text-gray-800">Mitra Supplier Terdaftar</h2>
-            <p className="text-sm text-gray-400 font-bold max-w-xl mx-auto uppercase tracking-widest">
-              UMKM Pangan & Kelompok Tani Lokal yang siap melayani kebutuhan dapur gizi
-            </p>
+        <div className="max-w-7xl mx-auto px-6 space-y-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-3 text-center md:text-left">
+              <h2 className="text-3xl font-black text-gray-800">Mitra Supplier Terdaftar</h2>
+              <p className="text-sm text-gray-400 font-bold max-w-xl uppercase tracking-widest">
+                UMKM Pangan & Kelompok Tani Lokal yang siap melayani kebutuhan dapur gizi
+              </p>
+            </div>
+            
+            {/* Carousel Buttons */}
+            {suppliers.length > 0 && (
+              <div className="flex justify-center items-center gap-2 self-center md:self-end">
+                <button
+                  onClick={scrollLeft}
+                  className="w-10 h-10 rounded-xl bg-white border border-gray-250 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors shadow-sm cursor-pointer"
+                  title="Geser Kiri"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  onClick={scrollRight}
+                  className="w-10 h-10 rounded-xl bg-white border border-gray-250 hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors shadow-sm cursor-pointer"
+                  title="Geser Kanan"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
           </div>
 
           {suppliersLoading ? (
@@ -310,9 +347,15 @@ function LandingPage() {
           ) : suppliers.length === 0 ? (
             <p className="text-center py-12 text-gray-450 italic font-semibold">Belum ada supplier yang mendaftar secara publik.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div 
+              ref={sliderRef}
+              className="flex overflow-x-auto gap-6 pb-6 scroll-smooth snap-x snap-mandatory no-scrollbar"
+            >
               {suppliers.map((sup) => (
-                <div key={sup.id} className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4">
+                <div 
+                  key={sup.id} 
+                  className="min-w-[290px] sm:min-w-[320px] max-w-[340px] snap-start bg-white border border-gray-150 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4 shrink-0"
+                >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <h4 className="text-base font-extrabold text-gray-800 truncate">{sup.supplier_name}</h4>
@@ -322,8 +365,6 @@ function LandingPage() {
                         </span>
                       )}
                     </div>
-
-
 
                     <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
                       <Truck size={14} className="text-gray-400 shrink-0" />
