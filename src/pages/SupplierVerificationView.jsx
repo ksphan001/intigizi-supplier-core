@@ -267,42 +267,121 @@ function SupplierVerificationView({ preselectedSupplierName, onClearPreselected 
             <div className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
               <h4 className="font-extrabold text-sm text-gray-800 flex items-center gap-1.5"><FileText size={18} className="text-emerald-500" /> Dokumen & Legalitas Hukum</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
-                  <span className="text-lg block">📄</span>
-                  <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor NIB</span>
-                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.nib_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
-                    {activeSupplier.nib_number || 'Belum diisi'}
-                  </span>
+                {/* KTP */}
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-between items-center min-h-[110px]">
+                  <div>
+                    <span className="text-lg block">🪪</span>
+                    <span className="text-[10px] font-bold text-gray-800 block mt-1">KTP Pemilik</span>
+                  </div>
+                  {activeSupplier.ktp_doc_path ? (
+                    <a
+                      href={`${apiClient.defaults.baseURL.replace('/app', '')}/${activeSupplier.ktp_doc_path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[9px] bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 px-2 py-0.5 rounded-full font-bold mt-1"
+                    >
+                      Lihat Berkas
+                    </a>
+                  ) : (
+                    <span className="text-[9px] text-red-500 font-bold italic mt-1">Belum diisi</span>
+                  )}
                 </div>
-                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
-                  <span className="text-lg block">📜</span>
-                  <span className="text-[10px] font-bold text-emerald-700 block mt-1">Sertifikat Halal</span>
-                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.halal_cert_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
-                    {activeSupplier.halal_cert_number || 'Belum diisi'}
-                  </span>
+
+                {/* NIB */}
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-between items-center min-h-[110px]">
+                  <div>
+                    <span className="text-lg block">📄</span>
+                    <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor NIB</span>
+                    <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.nib_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
+                      {activeSupplier.nib_number || 'Belum diisi'}
+                    </span>
+                  </div>
+                  {activeSupplier.nib_doc_path && (
+                    <a
+                      href={`${apiClient.defaults.baseURL.replace('/app', '')}/${activeSupplier.nib_doc_path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[9px] bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 px-2 py-0.5 rounded-full font-bold mt-1"
+                    >
+                      Lihat Berkas
+                    </a>
+                  )}
                 </div>
-                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
-                  <span className="text-lg block">💼</span>
-                  <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor SIUP</span>
-                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.siup_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
-                    {activeSupplier.siup_number || 'Belum diisi'}
-                  </span>
+
+                {/* Halal */}
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-between items-center min-h-[110px]">
+                  <div>
+                    <span className="text-lg block">📜</span>
+                    <span className="text-[10px] font-bold text-emerald-700 block mt-1">Sertifikat Halal</span>
+                    <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.halal_cert_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
+                      {activeSupplier.halal_cert_number || 'Belum diisi'}
+                    </span>
+                  </div>
+                  {activeSupplier.halal_doc_path && (
+                    <a
+                      href={`${apiClient.defaults.baseURL.replace('/app', '')}/${activeSupplier.halal_doc_path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[9px] bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 px-2 py-0.5 rounded-full font-bold mt-1"
+                    >
+                      Lihat Berkas
+                    </a>
+                  )}
                 </div>
-                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
-                  <span className="text-lg block">💳</span>
-                  <span className="text-[10px] font-bold text-gray-800 block mt-1">NPWP Pemasok</span>
-                  <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.npwp_number ? 'text-gray-650' : 'text-red-500 italic'}`}>
-                    {activeSupplier.npwp_number || 'Belum diisi'}
-                  </span>
+
+                {/* SIUP */}
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-between items-center min-h-[110px]">
+                  <div>
+                    <span className="text-lg block">💼</span>
+                    <span className="text-[10px] font-bold text-gray-800 block mt-1">Nomor SIUP</span>
+                    <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.siup_number ? 'text-gray-600' : 'text-red-500 italic'}`}>
+                      {activeSupplier.siup_number || 'Belum diisi'}
+                    </span>
+                  </div>
+                  {activeSupplier.siup_doc_path && (
+                    <a
+                      href={`${apiClient.defaults.baseURL.replace('/app', '')}/${activeSupplier.siup_doc_path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[9px] bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 px-2 py-0.5 rounded-full font-bold mt-1"
+                    >
+                      Lihat Berkas
+                    </a>
+                  )}
                 </div>
-                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
+
+                {/* NPWP */}
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-between items-center min-h-[110px]">
+                  <div>
+                    <span className="text-lg block">💳</span>
+                    <span className="text-[10px] font-bold text-gray-800 block mt-1">NPWP Pemasok</span>
+                    <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.npwp_number ? 'text-gray-650' : 'text-red-500 italic'}`}>
+                      {activeSupplier.npwp_number || 'Belum diisi'}
+                    </span>
+                  </div>
+                  {activeSupplier.npwp_doc_path && (
+                    <a
+                      href={`${apiClient.defaults.baseURL.replace('/app', '')}/${activeSupplier.npwp_doc_path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[9px] bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 px-2 py-0.5 rounded-full font-bold mt-1"
+                    >
+                      Lihat Berkas
+                    </a>
+                  )}
+                </div>
+
+                {/* Prima 3 */}
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-center items-center min-h-[110px]">
                   <span className="text-lg block">🛡️</span>
                   <span className="text-[10px] font-bold text-indigo-700 block mt-1">Sertifikat Prima 3</span>
                   <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.prima3_cert_number ? 'text-gray-650' : 'text-red-500 italic'}`}>
                     {activeSupplier.prima3_cert_number || 'Belum diisi'}
                   </span>
                 </div>
-                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center">
+
+                {/* Bank Account */}
+                <div className="border border-gray-150 rounded-xl p-3 bg-gray-50 text-center flex flex-col justify-center items-center min-h-[110px] col-span-2 md:col-span-1">
                   <span className="text-lg block">🏦</span>
                   <span className="text-[10px] font-bold text-gray-800 block mt-1">Rekening Bank</span>
                   <span className={`text-[9px] font-semibold block mt-0.5 ${activeSupplier.bank_account_info ? 'text-gray-650 font-mono' : 'text-red-500 italic'}`}>
