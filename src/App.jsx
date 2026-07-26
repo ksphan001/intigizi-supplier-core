@@ -112,13 +112,13 @@ function DashboardLayout() {
           {/* Logo Brand matching Aplikasi Dapur */}
           <div className="flex items-center gap-2 mb-8 pl-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-50 shadow-sm border border-green-100 flex-shrink-0 relative">
-              <span className="text-green-600 font-black text-sm absolute -translate-x-1 -translate-y-1">I</span>
-              <span className="text-orange-500 font-black text-sm absolute translate-x-1.5 translate-y-1">G</span>
+              <span className="text-green-600 font-black text-xs absolute -translate-x-1 -translate-y-1">S</span>
+              <span className="text-orange-500 font-black text-xs absolute translate-x-1.5 translate-y-1">G</span>
               <div className="absolute top-1 left-4 w-1 h-1 rounded-full bg-green-500" />
             </div>
-            <span className="text-lg font-black tracking-tight text-gray-700">
-              <span>Inti</span>
-              <span className="text-green-600">Gizi</span>
+            <span className="text-base font-black tracking-tight text-gray-700">
+              <span>Sentra</span>
+              <span className="text-green-600 ml-1">IntiGizi</span>
             </span>
           </div>
 
