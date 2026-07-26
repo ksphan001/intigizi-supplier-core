@@ -221,7 +221,7 @@ function DashboardLayout() {
 
 // Protected Route Guard helper
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('supplierToken');
+  const token = localStorage.getItem('supplierAuthToken');
   if (!token) {
     return <Navigate to="/login" replace />;
   }
