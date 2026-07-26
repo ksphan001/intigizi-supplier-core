@@ -127,7 +127,7 @@ function CatalogView() {
 
       {/* OVERLAY MODAL FORM */}
       {showForm && (
-        <div className="fixed top-0 left-0 w-full h-full bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen m-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
           <div className="bg-white border rounded-3xl p-6 shadow-2xl max-w-lg w-full relative animate-scale-in">
             <button
               onClick={() => setShowForm(false)}
